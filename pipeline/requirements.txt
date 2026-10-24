@@ -1,0 +1,13 @@
+# Runtime dependencies for the episode-animatic pipeline (Python 3.11+).
+# ffmpeg/ffprobe are NOT required on the system PATH: they come bundled
+# with imageio-ffmpeg and are resolved via imageio_ffmpeg.get_ffmpeg_exe().
+numpy>=1.26
+Pillow>=10.0
+imageio-ffmpeg>=0.4.9
+# Human-authorable episode configs are YAML (JSON also accepted by extension).
+PyYAML>=6.0
+
+# Dev/test dependency. Installed alongside the runtime deps for local
+# development and CI, e.g.:
+#   pip install -r pipeline/requirements.txt pytest
+# pytest is intentionally NOT pinned as a runtime dep above.

@@ -1,0 +1,205 @@
+# SC09 "First Meeting" - full five-minute animatic.
+#
+# Transcribed from golu_project/build_sc09_full_animatic.py. Asset paths are
+# relative, so resolve them with:
+#
+#   python -m pipeline build \
+#     --config pipeline/examples/sc09-five-minute.yaml \
+#     --assets-dir /projects/sandbox/golu_project \
+#     --out-dir /tmp/sc09-out
+#
+# NOTE: this renders a full 5:00 episode and is slow; use --validate-only for a
+# quick check, or smoke-test.yaml for a fast end-to-end render.
+title: "SC09 - Full Five-Minute"
+width: 1280
+height: 720
+fps_unique: 12
+fps_delivery: 24
+sample_rate: 44100
+total_duration: 300.0
+output_basename: "SC09-full-five-minute-animatic"
+
+shots:
+  - name: "Lane - first look"
+    image: keyframes/sc09-01-lane-and-auto.png
+    duration: 35.0
+    rain: 25
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [7, 0.43, 0.60, 1.35]
+      - [10, 0.41, 0.63, 1.95]
+      - [19, 0.41, 0.63, 1.95]
+      - [27, 0.57, 0.38, 1.28]
+      - [35, 0.50, 0.50, 1.03]
+    events:
+      - clip: audio/sc09-01-golu-what.mp3
+        who: g
+        start: 10.0
+        x: 0.405
+        y: 0.625
+        w: 0.018
+        text: "वो क्या है?"
+
+  - name: "Auto-rickshaw exchange"
+    image: keyframes/sc09-02-rickshaw-exchange.png
+    duration: 40.0
+    rain: 25
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [5, 0.59, 0.38, 1.55]
+      - [12, 0.59, 0.38, 1.55]
+      - [15, 0.77, 0.48, 1.60]
+      - [23, 0.77, 0.48, 1.60]
+      - [30, 0.50, 0.50, 1.08]
+      - [40, 0.50, 0.50, 1.00]
+    events:
+      - clip: audio/sc09-02-aarav-auto.mp3
+        who: a
+        start: 6.0
+        x: 0.59
+        y: 0.39
+        w: 0.030
+        text: "ऑटो-रिक्शा। ये नॉर्मल है।"
+      - clip: audio/sc09-03-golu-museum.mp3
+        who: g
+        start: 15.5
+        x: 0.77
+        y: 0.48
+        w: 0.030
+        text: "कौन सा गैजेट है? आवाज़ इतनी खराब! नॉर्मल? फ्यूचर में इसे म्यूज़ियम पीस कहते हैं!"
+
+  - name: "Mummy's footsteps"
+    image: keyframes/sc09-03-mummy-footsteps.png
+    duration: 25.0
+    rain: 12
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [6, 0.58, 0.62, 1.45]
+      - [11, 0.58, 0.62, 1.55]
+      - [16, 0.40, 0.43, 1.38]
+      - [21, 0.40, 0.43, 1.30]
+      - [25, 0.50, 0.50, 1.00]
+    events: []
+
+  - name: "Defender-Hat"
+    image: keyframes/sc09-04-defender-hat.png
+    duration: 35.0
+    rain: 12
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [6, 0.33, 0.48, 1.55]
+      - [15, 0.33, 0.48, 1.55]
+      - [20, 0.48, 0.54, 1.40]
+      - [27, 0.78, 0.39, 1.45]
+      - [35, 0.50, 0.50, 1.00]
+    events:
+      - clip: audio/sc09-04-golu-defender.mp3
+        who: g
+        start: 8.0
+        x: 0.33
+        y: 0.50
+        w: 0.034
+        text: "डिफेंडर-हैट! अटैक को रोकता है!"
+
+  - name: "Snail wins"
+    image: keyframes/sc09-05-snail-wins.png
+    duration: 45.0
+    rain: 10
+    camera:
+      - [0, 0.16, 0.60, 1.35]
+      - [5, 0.78, 0.38, 1.52]
+      - [12, 0.78, 0.38, 1.52]
+      - [15, 0.53, 0.48, 1.48]
+      - [25, 0.53, 0.48, 1.48]
+      - [32, 0.18, 0.60, 1.32]
+      - [45, 0.50, 0.50, 1.00]
+    events:
+      - clip: audio/sc09-05-aarav-snail-question.mp3
+        who: a
+        start: 6.0
+        x: 0.79
+        y: 0.38
+        w: 0.027
+        text: "फ्यूचर का डिफेंडर... घोंघे के लिए था?"
+      # Re-uses the already-generated matching Golu line from the prior animatic.
+      - clip: audio/g06.mp3
+        who: g
+        start: 15.0
+        x: 0.53
+        y: 0.49
+        w: 0.033
+        text: "स्नेल भी तो जीतता है, आरव। हमेशा। धीरे-धीरे।"
+
+  - name: "Wardrobe - art gallery"
+    image: keyframes/sc09-06-wardrobe-art-gallery.png
+    duration: 35.0
+    rain: 5
+    camera:
+      - [0, 0.50, 0.48, 1.00]
+      - [5, 0.55, 0.55, 1.50]
+      - [12, 0.55, 0.55, 1.50]
+      - [17, 0.27, 0.37, 1.52]
+      - [26, 0.27, 0.37, 1.52]
+      - [35, 0.50, 0.50, 1.00]
+    events:
+      - clip: audio/sc09-06-golu-art-gallery.mp3
+        who: g
+        start: 6.0
+        x: 0.55
+        y: 0.55
+        w: 0.040
+        text: "ये... ये सब क्या हैं? आर्ट गैलरी?!"
+      - clip: audio/sc09-07-aarav-sarees.mp3
+        who: a
+        start: 18.0
+        x: 0.27
+        y: 0.37
+        w: 0.030
+        text: "साड़ियाँ। और सुन—अगर पकड़े गए, तो तू फ्यूचर में वापस रीसायकल हो जाएगा, राइट?"
+
+  - name: "Data-loss / jalebi"
+    image: keyframes/sc09-07-data-loss-glitch.png
+    duration: 55.0
+    rain: 4
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [6, 0.64, 0.55, 1.48]
+      - [24, 0.64, 0.55, 1.48]
+      - [34, 0.38, 0.43, 1.48]
+      - [39, 0.38, 0.43, 1.48]
+      - [44, 0.64, 0.55, 1.48]
+      - [49, 0.64, 0.55, 1.48]
+      - [55, 0.50, 0.50, 1.02]
+    events:
+      - clip: audio/sc09-08-golu-data-loss-jalebi.mp3
+        who: g
+        start: 7.0
+        x: 0.64
+        y: 0.56
+        w: 0.038
+        text: "नहीं, फ्यूचर में तो बस डेटा-लॉस बोलते हैं। कोई दिक्कत नहीं... सिर्फ मेमरी... और फेस... और नाम... तो! पहला दिन—कल! मिशन ब्रीफ! और हाँ, एक जलेबी? 2140 की। कैलरी ज़ीरो। रिग्रेट इनफिनिट।"
+      - clip: audio/sc09-09-aarav-tu-pagal.mp3
+        who: a
+        start: 40.0
+        x: 0.38
+        y: 0.43
+        w: 0.030
+        text: "तू पागल है।"
+      - clip: audio/sc09-10-golu-compulsory.mp3
+        who: g
+        start: 46.0
+        x: 0.64
+        y: 0.56
+        w: 0.038
+        text: "फ्यूचर से आया हूँ—पागल होना कम्पल्सरी है!"
+
+  - name: "Keyhole - goodnight"
+    image: keyframes/sc09-08-jalebi-goodnight.png
+    duration: 30.0
+    rain: 3
+    camera:
+      - [0, 0.50, 0.52, 1.00]
+      - [8, 0.50, 0.52, 1.12]
+      - [20, 0.50, 0.52, 1.25]
+      - [30, 0.50, 0.52, 1.35]
+    events: []
