@@ -14,3 +14,31 @@ crash.*.log
 
 # OS cruft
 .DS_Store
+
+# ---------------------------------------------------------------------------
+# Animatic pipeline (pipeline/) - Python tooling + generated media
+# ---------------------------------------------------------------------------
+
+# Python caches / bytecode
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtualenvs (the workspace venv lives at /projects/sandbox/.venv-animatic;
+# any local .venv*/ or venv/ must never be tracked).
+.venv*/
+venv/
+
+# Generated media and render artifacts (rendered output, never committed).
+*.mp4
+*.wav
+# Intermediate per-shot frame directories streamed to disk before muxing.
+*_frames/
+# Default and configured pipeline output directories.
+pipeline/out/
+pipeline/output/
+
+# Downloaded fonts (e.g. Noto Sans Devanagari) fetched at runtime and
+# supplied via --font / config font_path. Kept outside version control.
+*.ttf
+fonts/
