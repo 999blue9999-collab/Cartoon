@@ -1,0 +1,59 @@
+# Short smoke-test episode for fast end-to-end verification.
+#
+# Reuses a couple of SC09 keyframes + clips, a few seconds each, so the full
+# build (mix + frames + mux) runs in seconds:
+#
+#   python -m pipeline build \
+#     --config pipeline/examples/smoke-test.yaml \
+#     --assets-dir /projects/sandbox/golu_project \
+#     --out-dir /projects/sandbox/.animatic-out
+title: "Smoke Test"
+width: 640
+height: 360
+fps_unique: 12
+fps_delivery: 24
+sample_rate: 44100
+total_duration: 10.0
+output_basename: "smoke-test-animatic"
+
+shots:
+  - name: "Lane"
+    image: keyframes/sc09-01-lane-and-auto.png
+    duration: 4.0
+    rain: 25
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [4, 0.41, 0.63, 1.35]
+    events:
+      - clip: audio/sc09-01-golu-what.mp3
+        who: g
+        start: 0.5
+        x: 0.405
+        y: 0.625
+        w: 0.030
+        text: "वो क्या है?"
+
+  - name: "Rickshaw"
+    image: keyframes/sc09-02-rickshaw-exchange.png
+    duration: 4.0
+    rain: 12
+    camera:
+      - [0, 0.50, 0.50, 1.00]
+      - [4, 0.59, 0.38, 1.40]
+    events:
+      - clip: audio/sc09-02-aarav-auto.mp3
+        who: a
+        start: 0.3
+        x: 0.59
+        y: 0.39
+        w: 0.040
+        text: "ऑटो-रिक्शा। ये नॉर्मल है।"
+
+  - name: "Goodnight"
+    image: keyframes/sc09-08-jalebi-goodnight.png
+    duration: 2.0
+    rain: 3
+    camera:
+      - [0, 0.50, 0.52, 1.00]
+      - [2, 0.50, 0.52, 1.20]
+    events: []

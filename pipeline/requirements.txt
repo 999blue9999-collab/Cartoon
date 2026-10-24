@@ -4,6 +4,8 @@
 numpy>=1.26
 Pillow>=10.0
 imageio-ffmpeg>=0.4.9
+# Human-authorable episode configs are YAML (JSON also accepted by extension).
+PyYAML>=6.0
 
 # Dev/test dependency. Installed alongside the runtime deps for local
 # development and CI, e.g.:
