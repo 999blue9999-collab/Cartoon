@@ -9,9 +9,15 @@
 #
 # Networking: to keep this module deployable WITHOUT first building a VPC, the
 # compute environment attaches to the account's DEFAULT VPC and its subnets via
-# data sources, plus one minimal egress-only security group. For a hardened
-# production deployment, replace these data sources with a dedicated VPC module
-# (private subnets + NAT) and pass its subnet/SG ids in.
+# data sources, plus one minimal egress-only security group (NO inbound at all).
+# A dedicated VPC (private subnets + NAT + VPC endpoints) is deliberately OUT OF
+# SCOPE for this deliverable (B = pipeline-as-code); it is a self-contained
+# networking workstream. The security group is already least-ingress (no inbound
+# rules), and egress is left open because render nodes pull from S3, ECR, the
+# CloudWatch Logs endpoint, and OS/package mirrors whose IP ranges are broad and
+# region-specific; scoping egress meaningfully requires the VPC-endpoint layout
+# that comes with the dedicated-VPC workstream. To harden, replace these data
+# sources with a dedicated VPC module and pass its subnet/SG ids in.
 #
 # Scaling: min/desired vCPUs are 0 (scale to zero when idle, no idle cost) and
 # max vCPUs is var.render_max_vcpus, sized for parallel rendering toward 52+
@@ -250,17 +256,23 @@ resource "aws_batch_job_definition" "render" {
     ]
 
     # Resource requirements: vCPU, memory and GPUs. g5.xlarge has 1 A10G GPU,
-    # 4 vCPU, 16 GiB; request conservatively so the job fits the smallest
-    # candidate instance type.
+    # 4 vCPU, 16 GiB (16384 MiB). Request 14336 MiB (14 GiB) so ~2 GiB stays
+    # free for the ECS agent, the ECS-GPU AMI, and kernel/reserved memory;
+    # requesting closer to the 16 GiB ceiling risks the job failing to place
+    # on the smallest candidate instance type.
     resourceRequirements = [
       { type = "VCPU", value = "4" },
-      { type = "MEMORY", value = "15000" },
+      { type = "MEMORY", value = "14336" },
       { type = "GPU", value = "1" },
     ]
 
     environment = [
       { name = "ASSETS_BUCKET", value = local.assets_bucket_name },
       { name = "MASTERS_BUCKET", value = local.masters_bucket_name },
+      # Reproducible intermediate frames go to the assets bucket /scratch/
+      # prefix, which carries the 14-day expiration lifecycle rule. Finished
+      # frames go to the masters bucket /renders/ prefix (output_prefix above).
+      { name = "SCRATCH_PREFIX", value = "s3://${local.assets_bucket_name}/scratch/" },
     ]
 
     logConfiguration = {

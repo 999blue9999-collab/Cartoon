@@ -7,7 +7,10 @@
 #      Assumed by the containerized render task running on AWS Batch / ECS
 #      (ecs-tasks.amazonaws.com). Scoped to:
 #        - READ from the assets bucket   (pull characters/backgrounds/audio)
-#        - READ/WRITE to the masters bucket under /renders/ and /scratch/
+#        - READ/WRITE scratch on the assets bucket under /scratch/ (reproducible
+#          intermediate frames; the assets bucket has the 14-day scratch
+#          lifecycle rule, so scratch is cost-controlled, not the masters bucket)
+#        - WRITE finished frames to the masters bucket under /renders/
 #        - PUT CloudWatch Logs for the job
 #      S3 actions are pinned to the two concrete bucket ARNs. There is no
 #      account-wide s3:* and no resource "*" where a real ARN exists.
@@ -58,6 +61,24 @@ data "aws_iam_policy_document" "render_job" {
     resources = ["${aws_s3_bucket.assets.arn}/*"]
   }
 
+  # Read/write reproducible render scratch on the ASSETS bucket under
+  # /scratch/. Scratch deliberately lives on the assets bucket because that is
+  # where the 14-day scratch expiration lifecycle rule lives (storage.tf), so
+  # intermediate frames never accumulate on the more expensive masters bucket.
+  statement {
+    sid    = "ReadWriteAssetsScratch"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+    ]
+    resources = [
+      "${aws_s3_bucket.assets.arn}/scratch/*",
+    ]
+  }
+
   statement {
     sid       = "ListAssetsBucket"
     effect    = "Allow"
@@ -65,10 +86,11 @@ data "aws_iam_policy_document" "render_job" {
     resources = [aws_s3_bucket.assets.arn]
   }
 
-  # Write render output + scratch to the masters bucket (and read back for
-  # multi-pass compositing). Scoped to the bucket ARN, not account-wide.
+  # Write finished render frames to the masters bucket under /renders/ (and
+  # read back for multi-pass compositing). Scoped to the /renders/ prefix of
+  # the bucket ARN, not account-wide; scratch is kept off this bucket.
   statement {
-    sid    = "WriteRendersAndScratch"
+    sid    = "WriteRenders"
     effect = "Allow"
     actions = [
       "s3:GetObject",
@@ -78,7 +100,6 @@ data "aws_iam_policy_document" "render_job" {
     ]
     resources = [
       "${aws_s3_bucket.masters.arn}/renders/*",
-      "${aws_s3_bucket.masters.arn}/scratch/*",
     ]
   }
 
@@ -91,7 +112,7 @@ data "aws_iam_policy_document" "render_job" {
     condition {
       test     = "StringLike"
       variable = "s3:prefix"
-      values   = ["renders/*", "scratch/*"]
+      values   = ["renders/*"]
     }
   }
 
