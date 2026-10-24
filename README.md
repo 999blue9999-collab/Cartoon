@@ -92,7 +92,17 @@ A deeper component-by-component description, diagrams, and the scale math are in
 Cartoon/
   README.md                      this file
   docs/
-    architecture.md              deep dive, diagrams, scale math, limitations
+    architecture.md              AWS pipeline deep dive, diagrams, scale math, limitations
+    n8n-cartoon-pipeline.md      n8n cartoon automation: episodes, seasons, consistent characters/voices
+    character-bible-template.md  template for the Character Bible (consistent cast across seasons)
+  workflows/                     n8n workflow JSON templates (import into n8n)
+    n8n-cartoon-season-producer.json   plan -> scenes -> TTS -> image -> video -> lipsync -> assemble -> publish
+    n8n-character-onboarding.json      register one consistent character (ref image + voice clone)
+  templates/                     Google Sheet templates that drive the n8n pipeline
+    episodes.csv                 season/episode plan (status, approval, music, ...)
+    scenes.csv                   per-scene breakdown (character, dialogue, action, ...)
+    characters.csv               Character Bible starter
+  services/episode-assembler/    FastAPI service: stitches scenes, music, subtitles into an episode MP4
   infra/                         Terraform root module (flat layout)
     versions.tf                  Terraform and AWS provider version pins
     providers.tf                 AWS provider, region, default tags
@@ -106,6 +116,7 @@ Cartoon/
     monitoring.tf                Budgets, CloudWatch, SNS, log group
     outputs.tf                   bucket, role, queue, distribution outputs
     terraform.tfvars.example     example variable values (no secrets)
+  docker-compose.yml             local n8n + episode assembler for development
 ```
 
 ## Configuring variables
@@ -178,6 +189,37 @@ Read this before assuming what the pipeline does.
   No such tool is provided or exists in this environment. The repository is the
   AWS orchestration and scaffolding (storage, GPU scheduling, mastering,
   subtitles, delivery, cost control) around a render payload that you supply.
+
+## Cartoon automation with n8n (creative layer)
+
+This repository also contains n8n workflow templates that automate **Doraemon-style
+cartoon production in complete episodes and seasons**, with consistent
+characters, voices, voiceovers, and publishing:
+
+- [`workflows/n8n-cartoon-season-producer.json`](workflows/n8n-cartoon-season-producer.json)
+  reads a season/episode plan from Google Sheets and, per scene: generates a
+  voiceover (ElevenLabs, locked character voice), draws the scene (NanoBanana,
+  character reference + style lock), renders video (VEO3 image-to-video), and
+  lipsyncs it (Sync Labs). Scenes are then stitched into a mastered episode
+  (voice + music + subtitles) by the episode assembler service, sent to Telegram
+  for approval, and published via Blotato to YouTube/TikTok/Instagram/Facebook.
+- [`workflows/n8n-character-onboarding.json`](workflows/n8n-character-onboarding.json)
+  onboards one consistent character: reference image sheet (NanoBanana) + voice
+  clone (ElevenLabs), appended to the Character Bible sheet.
+- [`docs/n8n-cartoon-pipeline.md`](docs/n8n-cartoon-pipeline.md) — full setup,
+  consistency rules, credential list, and limitations.
+- [`docs/character-bible-template.md`](docs/character-bible-template.md) — starter
+  Character Bible for a Doraemon-style cast.
+- [`templates/`](templates/) — Google Sheet templates (Episodes, Scenes,
+  Characters) that drive the pipeline.
+- [`services/episode-assembler/`](services/episode-assembler/) — FastAPI service
+  that masters episode MP4s (concat, subtitles, music mix).
+- [`docker-compose.yml`](docker-compose.yml) — local n8n + assembler for
+  development.
+
+See `docs/n8n-cartoon-pipeline.md` for the import checklist and provider
+credentials (ElevenLabs, fal/NanoBanana, kie.ai VEO3, Sync Labs, Blotato,
+Google Drive/Sheets, Telegram).
 - **The creative render and lipsync job is a pluggable container.** You provide
   the actual 3D render and compositing (and any lipsync) as a container image
   through the `render_container_image` variable. The AWS Batch job definition

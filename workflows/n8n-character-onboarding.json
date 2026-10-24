@@ -1,0 +1,489 @@
+{
+  "name": "Cartoon Studio \u2014 Character Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# \ud83d\udc64 Character Onboarding\n\nRegister a new consistent character once; reuse in every episode.\n\n1. Trigger manually with: character name, role, description, voice sample URL.\n2. Generates a character reference sheet (NanoBanana, style-locked).\n3. Clones the voice (ElevenLabs) \u2014 paste the returned voice_id into the Config CHARACTER_BIBLE of the Season Producer.\n4. Appends a row to the `Characters` tab.\n",
+        "height": 420,
+        "width": 700,
+        "color": 4
+      },
+      "id": "ed35f5a5-b948-5287-bfb0-d36ca47b116a",
+      "name": "Sticky: Onboard Character",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "parameters": [
+            {
+              "id": "4368b45d-9193-5d61-89b0-e61f5b7db6f1",
+              "name": "character_name",
+              "type": "string",
+              "description": "Character name (e.g. 'robot cat')",
+              "required": true
+            },
+            {
+              "id": "a4c4e1b1-a5b0-5726-b7af-f0661e3c8ed3",
+              "name": "role",
+              "type": "string",
+              "description": "Role: protagonist / mentor / friend / antagonist"
+            },
+            {
+              "id": "47af0f2e-4cfc-5558-8096-0afdf0644882",
+              "name": "description",
+              "type": "string",
+              "description": "Visual description of the character"
+            },
+            {
+              "id": "a60fc91f-73da-5f26-8da2-4301804fb31c",
+              "name": "voice_sample_url",
+              "type": "string",
+              "description": "Public URL of a clean voice sample (or paste voice_id manually)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "879fb352-3ff2-5aea-877f-538b6c98c60e",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "05127086-a793-58c5-aa30-8435107c75a6",
+              "name": "SPREADSHEET_ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "15cd9017-bef8-50bd-ba3a-f984bb5d5bb0",
+              "name": "GID_CHARACTERS",
+              "type": "string",
+              "value": "0"
+            },
+            {
+              "id": "93835525-3c91-5cae-b395-f8f4889b7dd1",
+              "name": "ELEVENLABS_API_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "29a3b97a-c1ed-505c-a60c-f32d4406e7ac",
+              "name": "FAL_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "d10e4ae2-2c4a-5594-b0f7-4b9ff5d973b9",
+              "name": "STYLE_PROMPT",
+              "type": "string",
+              "value": "Doraemon-style 2D anime, bright flat colors, thick clean black outlines, simple geometric shapes, kawaii"
+            },
+            {
+              "id": "c9051998-73dc-5161-8f01-e7fe5ecfeb6d",
+              "name": "STYLE_REF_IMAGE",
+              "type": "string",
+              "value": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aac48c9b-4caf-58df-b087-bb8f46440d5b",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const refs = [$json.STYLE_REF_IMAGE].filter(Boolean);\nconst payload = {\n  prompt: 'Character model sheet: ' + $json.description + '. Turnaround: front view, side view, back view, neutral expression. ' + $json.STYLE_PROMPT + ', consistent character, plain light background.',\n  image_urls: refs,\n  seed: 777,\n  sync_mode: false\n};\nreturn { json: { body: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "e3492c7d-b641-5b14-8668-fff1b3e43ad1",
+      "name": "Build Ref-Image Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ https://queue.fal.run/fal-ai/nano-banana/edit }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Key ={{ $json.FAL_KEY }} }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body }}"
+      },
+      "id": "0b11b4f3-3be7-504e-ac4a-d1893e9d0970",
+      "name": "Generate Reference Image (NanoBanana)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "id": "cda7c78a-d5ea-5ea3-a946-a3c32d33c798",
+      "name": "Wait for Ref Image",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.response_url }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "2406278e-b6b0-5830-aafa-59a76f9d89a6",
+      "name": "Download Ref Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63b533f8-0e60-5c22-920b-818df227820d",
+              "name": "refImageUrl",
+              "type": "string",
+              "value": "={{ $json.images[0].url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b6a79632-8fc4-5b20-977a-8c0cf409307f",
+      "name": "Set Ref Image URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = {\n  name: $json.character_name,\n  description: ($json.role ? $json.role + '. ' : '') + $json.description,\n  files: [$json.voice_sample_url]\n};\nreturn { json: { body: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "f3a93c55-a111-50f5-9ede-6503f52bb280",
+      "name": "Build Voice Clone Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ https://api.elevenlabs.io/v1/voices/add }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "={{ $json.ELEVENLABS_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body }}"
+      },
+      "id": "07958596-0806-5d78-9ecd-821419f9c1a2",
+      "name": "Clone Voice (ElevenLabs)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1cf115ea-e691-5186-9e16-e8cbde9c5644",
+              "name": "voiceId",
+              "type": "string",
+              "value": "={{ $json.voice_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a0b93cad-30e0-5adb-89ea-54782f2ee460",
+      "name": "Set Voice ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "values": {
+          "parameters": [
+            {
+              "name": "Name",
+              "value": "={{ $json.character_name }}"
+            },
+            {
+              "name": "Role",
+              "value": "={{ $json.role }}"
+            },
+            {
+              "name": "RefImageUrl",
+              "value": "={{ $json.refImageUrl }}"
+            },
+            {
+              "name": "VoiceId",
+              "value": "={{ $json.voiceId }}"
+            },
+            {
+              "name": "Active",
+              "value": "YES"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ddab3bb9-a7d1-5f43-aa2c-83c6998a8b14",
+      "name": "Append to Characters Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2440,
+        460
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.TELEGRAM_CHAT_ID }}",
+        "text": "={{ \\u2705 Character onboarded: {{ $json.character_name }} ({{ $json.role }})\\nRef image: {{ $json.refImageUrl }}\\nVoice ID: {{ $json.voiceId }}\\n\\nCopy the voiceId into the Season Producer Config CHARACTER_BIBLE. }}",
+        "additionalFields": {}
+      },
+      "id": "1e47fc77-d38e-5b51-9461-5647131f8fb8",
+      "name": "Character Ready \u2713",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2880,
+        460
+      ],
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Sticky: Onboard Character": {
+      "main": [
+        [
+          {
+            "node": "Manual Trigger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Build Ref-Image Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Voice Clone Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Ref-Image Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Reference Image (NanoBanana)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Reference Image (NanoBanana)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Ref Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Ref Image": {
+      "main": [
+        [
+          {
+            "node": "Download Ref Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Ref Image": {
+      "main": [
+        [
+          {
+            "node": "Set Ref Image URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Voice Clone Request": {
+      "main": [
+        [
+          {
+            "node": "Clone Voice (ElevenLabs)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clone Voice (ElevenLabs)": {
+      "main": [
+        [
+          {
+            "node": "Set Voice ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Voice ID": {
+      "main": [
+        [
+          {
+            "node": "Append to Characters Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Ref Image URL": {
+      "main": [
+        [
+          {
+            "node": "Append to Characters Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Characters Sheet": {
+      "main": [
+        [
+          {
+            "node": "Character Ready \u2713",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "f3e4fa9d-ace6-5582-983b-02d9ae7ceb8d",
+  "tags": [],
+  "nodeGroups": [],
+  "meta": {}
+}

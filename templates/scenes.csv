@@ -1,0 +1,6 @@
+RowId,Season,Episode,SceneNo,Character,DialogueLine,Action,ImagePrompt,DurationSeconds,Status,AudioUrl,ImageUrl,VideoUrl,SyncedUrl
+2,1,1,1,robot cat,"Listen! I brought something that will help today.",Establishing shot of the living room, sunny morning.,The robot cat stands in a bright living room holding a small gadget.,6,PENDING,,,,,
+3,1,1,2,the boy,"Really? Can it fix everything?",Close-up of the boy looking hopeful.,The boy sits on the floor looking at the robot cat with wide eyes.,6,PENDING,,,,,
+4,1,1,3,robot cat,"Not everything — but it will fix this!",The robot cat presses the gadget.,The robot cat presses a button on the gadget; light glows around it.,6,PENDING,,,,,
+5,1,1,4,the boy,"It worked! Thank you!",Wide shot of the fixed room, characters smiling.,The boy and robot cat high-five in the tidy living room.,6,PENDING,,,,,
+6,1,2,1,the boy,"Oh no, it's raining again!",Rainy street outside school.,The boy stands under a tree watching rain fall on the street.,6,PENDING,,,,,

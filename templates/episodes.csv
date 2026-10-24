@@ -1,0 +1,4 @@
+RowId,Season,Episode,Title,Logline,MusicUrl,TargetDuration,Status,Approval,EpisodeUrl,PublishedAt
+2,1,1,"The Missing Gadget","Nobita loses a gadget and the robot cat helps him find it before school.",https://example.com/music/season1-theme.mp3,600,PLANNED,,,
+3,1,2,"Rainy Day Rescue","A sudden storm floods the shortcut to school; the gang builds a shelter.",https://example.com/music/season1-theme.mp3,600,PLANNED,,,
+4,1,3,"Gadget Gone Wild","The copy-robot makes too many copies and the classroom is in chaos.",https://example.com/music/season1-theme.mp3,600,,,

@@ -1,0 +1,1900 @@
+{
+  "name": "Cartoon Studio \u2014 Season Producer",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# \ud83d\udc30 Cartoon Studio \u2014 Season Producer (n8n)\n\nAutomates Doraemon-style cartoon episodes & seasons with consistent characters, voices and voiceovers.\n\n**Data lives in one Google Sheet** (3 tabs):\n- `Episodes`: Season, Episode, Title, Logline, MusicUrl, TargetDuration, Status, Approval, EpisodeUrl\n- `Scenes`: RowId, Season, Episode, SceneNo, Character, DialogueLine, Action, ImagePrompt, DurationSeconds, Status, AudioUrl, ImageUrl, VideoUrl, SyncedUrl\n- Config (Set node `Config`): Character Bible JSON, API keys, style prompt.\n\n**Per scene:** TTS (ElevenLabs, locked character voice) \u2192 Image (NanoBanana, character ref + style lock) \u2192 Video (VEO3 image-to-video) \u2192 Lipsync (Sync Labs) \u2192 row updated in sheet.\n**Per episode:** scenes stitched + music + subtitles (episode assembler service) \u2192 approval gate (Telegram) \u2192 publish (Blotato \u2192 YouTube/TikTok/IG/FB) \u2192 sheet marked PUBLISHED.\n\nConsistency rules: same Character Bible voice_id + reference image for every scene; same style prompt + style reference image; same season music track.\n",
+        "height": 520,
+        "width": 700,
+        "color": 3
+      },
+      "id": "683ede54-a19b-51bb-b1a4-de4ea9b1b456",
+      "name": "Sticky: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "05127086-a793-58c5-aa30-8435107c75a6",
+              "name": "SPREADSHEET_ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "15cd9017-bef8-50bd-ba3a-f984bb5d5bb0",
+              "name": "GID_EPISODES",
+              "type": "string",
+              "value": "0"
+            },
+            {
+              "id": "93835525-3c91-5cae-b395-f8f4889b7dd1",
+              "name": "GID_SCENES",
+              "type": "string",
+              "value": "0"
+            },
+            {
+              "id": "29a3b97a-c1ed-505c-a60c-f32d4406e7ac",
+              "name": "GID_CHARACTERS",
+              "type": "string",
+              "value": "0"
+            },
+            {
+              "id": "d10e4ae2-2c4a-5594-b0f7-4b9ff5d973b9",
+              "name": "ELEVENLABS_API_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "c9051998-73dc-5161-8f01-e7fe5ecfeb6d",
+              "name": "FAL_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "e6a0b583-222d-5b3a-a46d-e61d253faa39",
+              "name": "KIE_API_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "37fbf5b6-9d54-5b78-8ad9-ca8c2504b90f",
+              "name": "SYNCLABS_API_KEY",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "961cecb7-5b83-59f1-b1b5-c51e590d1c69",
+              "name": "ASSEMBLER_URL",
+              "type": "string",
+              "value": "http://episode-assembler:8000"
+            },
+            {
+              "id": "1451a5b4-4c8a-5926-a5b0-ebbbc49c5a0e",
+              "name": "TELEGRAM_BOT_TOKEN",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "9f4ffd3d-4f73-5d1f-b903-a1fa6db8186b",
+              "name": "TELEGRAM_CHAT_ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "de0543fc-20b6-5ac5-953d-1dbde307f9b4",
+              "name": "DRIVE_FOLDER_ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "b204bc84-9038-52bb-975c-d662b935f1e1",
+              "name": "STYLE_PROMPT",
+              "type": "string",
+              "value": "Doraemon-style 2D anime, bright flat colors, thick clean black outlines, simple geometric shapes, kawaii, sunny suburban Japan, 16:9"
+            },
+            {
+              "id": "b4c80526-4839-5e18-a71b-a56c41b4f379",
+              "name": "STYLE_REF_IMAGE",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "ec876547-8e19-546c-9d2d-61512471dace",
+              "name": "DEFAULT_CAPTION",
+              "type": "string",
+              "value": "New episode of the series is out! #cartoon #animation #kids"
+            },
+            {
+              "id": "a58b6759-354b-514b-9485-2d87900005bc",
+              "name": "AUTO_PUBLISH",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "id": "27a53886-b273-5205-a197-292e1e70c8de",
+              "name": "PUBLISH_TO_SOCIALS",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "id": "5cf39cb9-55cc-54a8-8252-155042347774",
+              "name": "CHARACTER_BIBLE",
+              "type": "string",
+              "value": "{\n  \"the boy\": {\"role\": \"protagonist\", \"voiceId\": \"ELEVENLABS_VOICE_ID\", \"refImageUrl\": \"\", \"colorScheme\": \"blue shirt, skin tone\"},\n  \"robot cat\": {\"role\": \"mentor\", \"voiceId\": \"ELEVENLABS_VOICE_ID\", \"refImageUrl\": \"\", \"colorScheme\": \"blue-white body, red nose\"},\n  \"the girl\": {\"role\": \"friend\", \"voiceId\": \"ELEVENLABS_VOICE_ID\", \"refImageUrl\": \"\", \"colorScheme\": \"pink dress\"},\n  \"bully\": {\"role\": \"antagonist\", \"voiceId\": \"ELEVENLABS_VOICE_ID\", \"refImageUrl\": \"\", \"colorScheme\": \"green shirt\"},\n  \"genius friend\": {\"role\": \"friend\", \"voiceId\": \"ELEVENLABS_VOICE_ID\", \"refImageUrl\": \"\", \"colorScheme\": \"yellow shirt, glasses\"}\n}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aac48c9b-4caf-58df-b087-bb8f46440d5b",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rules": [
+          {
+            "interval": [
+              {
+                "mode": "everyDay",
+                "hour": 8,
+                "minute": 0
+              }
+            ]
+          }
+        ],
+        "options": {}
+      },
+      "id": "b4321e8f-c40e-51cc-bda0-6cd0ef753a3a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://docs.google.com/spreadsheets/d/' + $json.SPREADSHEET_ID + '/export?format=csv&gid=' + $json.GID_EPISODES }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "b7b36b44-dbfa-580c-aa00-b4931104f357",
+      "name": "Fetch Episodes CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.csv ?? $json.body ?? $json.response ?? $json.data ?? JSON.stringify($json);\nconst lines = text.split(/\\r?\\n/).filter(l => l.trim());\nif (lines.length < 2) return [];\nconst headers = lines[0].split(',').map(h => h.trim().replace(/^\"|\"$/, ''));\nconst rows = lines.slice(1).map(l => {\n  const vals = l.split(',');\n  const o = {};\n  headers.forEach((h, i) => { o[h] = (vals[i] || '').trim().replace(/^\"|\"$/, ''); });\n  return o;\n});\nreturn rows.filter(r => {\n  const s = String(r.Status || '').trim().toUpperCase();\n  return s === '' || s === 'PLANNED';\n}).map(r => ({\n  json: {\n    Season: r.Season, Episode: r.Episode, Title: r.Title, Logline: r.Logline || '',\n    MusicUrl: r.MusicUrl || '', RowId: r.RowId || '',\n    TargetDuration: Number(r.TargetDuration || 600),\n  }\n}));",
+        "options": {}
+      },
+      "id": "bb90f349-e216-5041-bbf1-d5f3bcf755e5",
+      "name": "Parse Episodes CSV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "batchSize",
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "f59cf28f-c11a-5a7a-9a91-94f7ddf551ed",
+      "name": "One Episode at a Time",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        2440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://docs.google.com/spreadsheets/d/' + $json.SPREADSHEET_ID + '/export?format=csv&gid=' + $json.GID_SCENES }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "6f9ed7da-830a-512c-93f4-e746429047e6",
+      "name": "Fetch Scenes CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const bible = JSON.parse($json.CHARACTER_BIBLE || '{}');\nconst epSeason = String($json.Season);\nconst epEpisode = String($json.Episode);\nconst text = $json.csv ?? $json.body ?? $json.response ?? $json.data ?? JSON.stringify($json);\nconst lines = text.split(/\\r?\\n/).filter(l => l.trim());\nif (lines.length < 2) return [];\nconst headers = lines[0].split(',').map(h => h.trim().replace(/^\"|\"$/, ''));\nconst rows = lines.slice(1).map(l => {\n  const vals = l.split(',');\n  const o = {};\n  headers.forEach((h, i) => { o[h] = (vals[i] || '').trim().replace(/^\"|\"$/, ''); });\n  return o;\n});\nconst scenes = rows.filter(r => {\n  const s = String(r.Status || '').trim().toUpperCase();\n  return String(r.Season || '').trim() === epSeason\n    && String(r.Episode || '').trim() === epEpisode\n    && (s === '' || s === 'PENDING');\n});\nscenes.sort((a, b) => Number(a.SceneNo || 0) - Number(b.SceneNo || 0));\nreturn scenes.map((r, i) => {\n  const char = bible[r.Character] || {};\n  return {\n    json: {\n      Season: $json.Season, Episode: $json.Episode, Title: $json.Title,\n      EpisodeRowId: $json.RowId, SceneNo: r.SceneNo, Character: r.Character,\n      DialogueLine: r.DialogueLine, Action: r.Action, ImagePrompt: r.ImagePrompt || '',\n      DurationSeconds: Number(r.DurationSeconds || 6),\n      VoiceId: char.voiceId || '', RefImageUrl: char.refImageUrl || '',\n      Role: char.role || '', ColorScheme: char.colorScheme || '',\n      RowId: r.RowId || (i + 2),\n      isLast: i === scenes.length - 1,\n    }\n  };\n});",
+        "options": {}
+      },
+      "id": "50e9babe-fe7e-5edd-928f-f9cce6f3e5ac",
+      "name": "Scenes for This Episode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const style = $json.STYLE_PROMPT || 'Doraemon-style 2D anime, bright flat colors, thick clean black outlines, simple shapes, kawaii';\nconst prompt = ($json.Action ? $json.Action + '. ' : '') + $json.DialogueLine + ' Featuring ' + $json.Character + ' (' + $json.Role + '), consistent character design, reference image: ' + $json.RefImageUrl + '. ' + style + '. Palette: ' + $json.ColorScheme + '. 16:9, high quality.';\nreturn { json: { imagePrompt: prompt } };",
+        "options": {}
+      },
+      "id": "c5728cf2-1cee-57d4-a6eb-33ae8398ebae",
+      "name": "Build Image Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = {\n  text: $json.DialogueLine,\n  model_id: 'eleven_multilingual_v2',\n  voice_settings: { stability: 0.5, similarity_boost: 0.8, style: 0.3, speaker_boost: true }\n};\nreturn { json: { ttsBody: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "061973c1-8403-5ac3-9b88-308968915bb7",
+      "name": "Build TTS Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.elevenlabs.io/v1/text-to-speech/' + $json.VoiceId }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "={{ $json.ELEVENLABS_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.ttsBody }}",
+        "responseFormat": "file"
+      },
+      "id": "2621eff4-afde-5bd5-8eaf-586fbd447475",
+      "name": "Text-to-Speech (ElevenLabs)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "create",
+        "name": "={{ 'S' + $json.Season + 'E' + $json.Episode + '_Sc' + $json.SceneNo + '_' + $json.Character + '.mp3' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "175bb3a9-1ae4-57fc-b798-6373bd6f77ff",
+      "name": "Upload Audio to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4640,
+        300
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f23fe9c-c86d-58e0-b343-d7ffa1982363",
+              "name": "audio_url",
+              "type": "string",
+              "value": "={{ $json.webContentLink }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c427c46-3f2a-5160-8da2-1e3923bf60c6",
+      "name": "Set Audio URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const refs = [$json.RefImageUrl, $json.STYLE_REF_IMAGE].filter(Boolean);\nconst payload = {\n  prompt: $json.imagePrompt,\n  image_urls: refs,\n  seed: 42,\n  sync_mode: false\n};\nreturn { json: { nanobananaBody: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "5189e40d-cdda-5cad-aee6-5089112a21da",
+      "name": "Build NanoBanana Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4200,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ https://queue.fal.run/fal-ai/nano-banana/edit }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Key ={{ $json.FAL_KEY }} }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.nanobananaBody }}"
+      },
+      "id": "71895941-c8a2-55b0-ab65-0a40cf8f1274",
+      "name": "Generate Scene Image (NanoBanana)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4640,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "id": "f65866dd-2cb9-5ead-a64b-76187e5e9511",
+      "name": "Wait for Image",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5080,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.response_url }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "0427fd61-e9e2-5624-9ee0-1dae2d7b652f",
+      "name": "Download Edited Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5520,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd19fe57-4dd5-55ef-8eef-75f54670d4be",
+              "name": "image_url",
+              "type": "string",
+              "value": "={{ $json.images[0].url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3d82d522-328d-50e4-ab4d-fd6b9a485cbb",
+      "name": "Set Image URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5960,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const prompt = 'Scene ' + $json.SceneNo + ': ' + ($json.Action || '') + ' ' + $json.DialogueLine + ' \u2014 ' + $json.Character + ', ' + $json.STYLE_PROMPT + ', consistent character, same outfit as reference image, 16:9.';\nreturn { json: { videoPrompt: prompt } };",
+        "options": {}
+      },
+      "id": "7e43d72a-d005-5bfe-b671-ff6379ad75f9",
+      "name": "Build Video Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4200,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = {\n  prompt: $json.videoPrompt,\n  model: 'veo3_fast',\n  aspectRatio: '16:9',\n  imageUrls: [$json.image_url]\n};\nreturn { json: { veoBody: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "430dc8ce-152d-5d9b-a993-d7526e75e489",
+      "name": "Build VEO3 Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ https://api.kie.ai/api/v1/veo/generate }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Bearer ={{ $json.KIE_API_KEY }} }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.veoBody }}"
+      },
+      "id": "4aa9ab36-f8e6-51be-ae1c-4b425bcd613a",
+      "name": "Generate Scene Video (VEO3)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5080,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "id": "4e82e55e-766b-5b2b-8dda-8cb5f2cfb536",
+      "name": "Wait for Render",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5520,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ https://api.kie.ai/api/v1/veo/record-info?taskId=={{ $json.data.taskId }} }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Bearer ={{ $json.KIE_API_KEY }} }}"
+            }
+          ]
+        }
+      },
+      "id": "11e8308e-83ae-50e7-beb0-5f16882d173e",
+      "name": "Check VEO3 Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5960,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.data.status }}",
+              "operation": "equals",
+              "value2": "completed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c6b3208-18c5-5533-b751-98e8bb63d955",
+      "name": "VEO3 Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        6400,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return { json: { ...$json, audioUrl: $json.audio_url, videoUrl: $json.data.resultUrls[0] } };",
+        "options": {}
+      },
+      "id": "3d5e7dc6-f520-5408-8be9-09e019faec22",
+      "name": "Prep Lipsync",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6840,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = { videoUrl: $json.videoUrl, audioUrl: $json.audioUrl };\nreturn { json: { synclabsBody: JSON.stringify(payload) } };",
+        "options": {}
+      },
+      "id": "3604d236-592a-55d7-8e12-fd222d33e6f1",
+      "name": "Build Sync Labs Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6840,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ https://api.sync-labs.co/v1/video/sync }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Bearer ={{ $json.SYNCLABS_API_KEY }} }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.synclabsBody }}"
+      },
+      "id": "626ea7fc-eca9-5c6b-aa6f-4790268de524",
+      "name": "Lipsync (Sync Labs)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7280,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "id": "9c9183ab-d6e7-546d-a1cb-41a8d1f813b8",
+      "name": "Wait for Lipsync",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        7720,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ https://api.sync-labs.co/v1/video/sync/={{ $json.jobId }} }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ Bearer ={{ $json.SYNCLABS_API_KEY }} }}"
+            }
+          ]
+        }
+      },
+      "id": "ac3c8cbb-8c18-5a9a-b76c-398c3b1c3287",
+      "name": "Get Lipsync Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8160,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const synced = $json.outputUrl || $json.videoUrl || '';\nreturn { json: { ...$json, syncedUrl: synced, note: $json.outputUrl ? 'lipsync OK' : 'lipsync unavailable, using raw video' } };",
+        "options": {}
+      },
+      "id": "93473dd1-9d0e-5cc3-a8f7-e5ceaaf226ea",
+      "name": "Finalize Scene",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8600,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "range": "={{ 'A' + $json.RowId + ':Z' + $json.RowId }}",
+        "values": {
+          "parameters": [
+            {
+              "name": "Status",
+              "value": "={{ $json.Status || 'DONE' }}"
+            },
+            {
+              "name": "AudioUrl",
+              "value": "={{ $json.audio_url || '' }}"
+            },
+            {
+              "name": "ImageUrl",
+              "value": "={{ $json.image_url || '' }}"
+            },
+            {
+              "name": "VideoUrl",
+              "value": "={{ $json.videoUrl || '' }}"
+            },
+            {
+              "name": "SyncedUrl",
+              "value": "={{ $json.syncedUrl || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cfe2f15b-39ce-567f-ae06-f781573205d3",
+      "name": "Update Scene Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        9040,
+        620
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "return { json: { Status: 'FAILED', Error: 'VEO3 render did not complete', AudioUrl: $json.audio_url || '', ImageUrl: $json.image_url || '', VideoUrl: $json.videoUrl || '', SyncedUrl: '' } };",
+        "options": {}
+      },
+      "id": "961700e7-23a2-571d-b3c1-855339fce5f3",
+      "name": "Mark Scene Failed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6840,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isLastScene }}",
+              "value2": true,
+              "operation": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8125c17-193c-5744-8869-7165ed5169ae",
+      "name": "Last Scene of Episode?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        9480,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "numberInputs": 2,
+        "options": {}
+      },
+      "id": "1f1ef65f-b959-55fc-9a86-af0dc70943c4",
+      "name": "Merge Episode Context",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        9920,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://docs.google.com/spreadsheets/d/' + $json.SPREADSHEET_ID + '/export?format=csv&gid=' + $json.GID_SCENES }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "0aeb7715-f29c-5867-ae7a-1d549dea949f",
+      "name": "Re-Fetch Scenes CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        9920,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.csv ?? $json.body ?? $json.response ?? $json.data ?? JSON.stringify($json);\nconst lines = text.split(/\\r?\\n/).filter(l => l.trim());\nconst headers = lines[0].split(',').map(h => h.trim().replace(/^\"|\"$/, ''));\nconst rows = lines.slice(1).map(l => {\n  const vals = l.split(',');\n  const o = {};\n  headers.forEach((h, i) => { o[h] = (vals[i] || '').trim().replace(/^\"|\"$/, ''); });\n  return o;\n});\nconst scenes = rows\n  .filter(r => String(r.Season || '').trim() === String($json.Season) && String(r.Episode || '').trim() === String($json.Episode) && String(r.SyncedUrl || '').trim() !== '')\n  .sort((a, b) => Number(a.SceneNo || 0) - Number(b.SceneNo || 0))\n  .map(r => ({\n    scene_no: Number(r.SceneNo),\n    video_url: r.SyncedUrl,\n    audio_url: r.AudioUrl || '',\n    dialogue_line: r.DialogueLine || '',\n    duration_seconds: Number(r.DurationSeconds || 6)\n  }));\nconst payload = {\n  episode_key: 'S' + $json.Season + 'E' + $json.Episode,\n  season: $json.Season,\n  episode: $json.Episode,\n  title: $json.Title,\n  music_url: $json.MusicUrl || '',\n  target_duration: Number($json.TargetDuration || 600),\n  scenes,\n  created_at: new Date().toISOString()\n};\nreturn { json: { ...$json, assembleBody: JSON.stringify(payload), skipAssembly: scenes.length === 0 } };",
+        "options": {}
+      },
+      "id": "85a483d0-f343-5c74-94b4-e5e2c01e6165",
+      "name": "Build Assembly Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10360,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.skipAssembly }}",
+              "value2": true,
+              "operation": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "17b99bf8-598a-53d7-9c65-1c59997b7ded",
+      "name": "Has Scenes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        10800,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.ASSEMBLER_URL + '/assemble-episode' }}",
+        "options": {},
+        "authentication": "none",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.assembleBody }}"
+      },
+      "id": "f32f1544-1413-510d-9278-a3b3ed8c877d",
+      "name": "Assemble Episode",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10360,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.AUTO_PUBLISH }}",
+              "value2": true,
+              "operation": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e74e4a19-3fc2-5873-a8b9-4861a0e5712d",
+      "name": "Auto-Publish?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        10800,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.TELEGRAM_CHAT_ID }}",
+        "text": "={{ \\u2728 *Preview ready* Season {{ $json.Season }} Episode {{ $json.Episode }} \\u2014 {{ $json.Title }}\\n\\n{{ $json.episodeUrl }}\\n\\nSet Approval = YES in the Episodes sheet to publish. }}",
+        "additionalFields": {}
+      },
+      "id": "2af9bda1-4097-5eef-8504-88959942e906",
+      "name": "Send Preview to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        11240,
+        900
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "amount": 3600
+      },
+      "id": "fdf1b258-93e1-5db9-b067-bdec875c74a5",
+      "name": "Wait for Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        11680,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "numberInputs": 2,
+        "options": {}
+      },
+      "id": "ffe826c1-d650-5522-bbfe-4cc36afa6a4e",
+      "name": "Merge Approval Context",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        11680,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://docs.google.com/spreadsheets/d/' + $json.SPREADSHEET_ID + '/export?format=csv&gid=' + $json.GID_EPISODES }}",
+        "options": {},
+        "authentication": "none"
+      },
+      "id": "0c548cd2-0247-5151-b6c1-5b77dc65f82e",
+      "name": "Re-Fetch Episodes CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        12120,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.csv ?? $json.body ?? $json.response ?? $json.data ?? JSON.stringify($json);\nconst lines = text.split(/\\r?\\n/).filter(l => l.trim());\nconst headers = lines[0].split(',').map(h => h.trim().replace(/^\"|\"$/, ''));\nconst rows = lines.slice(1).map(l => {\n  const vals = l.split(',');\n  const o = {};\n  headers.forEach((h, i) => { o[h] = (vals[i] || '').trim().replace(/^\"|\"$/, ''); });\n  return o;\n});\nconst row = rows.find(r => String(r.Season || '').trim() === String($json.Season) && String(r.Episode || '').trim() === String($json.Episode));\nreturn { json: { approved: String((row && row.Approval) || '').trim().toUpperCase(), episodeRowId: row && row.RowId, RowId: $json.RowId || (row && row.RowId), season: $json.Season, episode: $json.Episode, title: $json.Title, episodeUrl: $json.episodeUrl || (row && row.EpisodeUrl) || '' } };",
+        "options": {}
+      },
+      "id": "d4f16c13-fa9e-5eb6-87d5-d3f2f76b012c",
+      "name": "Check Approval Flag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12560,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.approved }}",
+              "operation": "equals",
+              "value2": "YES"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2832df87-e192-53ea-a172-e12b79a58763",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        13000,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "mediaUrl": "={{ $json.episodeUrl }}",
+        "resource": "media",
+        "options": {}
+      },
+      "id": "d3820fa3-3f1e-5f96-8bbb-c81209301d56",
+      "name": "Upload to Blotato",
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        13440,
+        740
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4acaa84d-1b79-52f4-b59f-758968fedbc2",
+              "name": "mediaUrl",
+              "type": "string",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "id": "1cc83620-ba72-5c66-a59e-bf57e2899429",
+              "name": "postText",
+              "type": "string",
+              "value": "={{ $json.DEFAULT_CAPTION }}"
+            },
+            {
+              "id": "1fff7c41-9f1d-5c66-a031-c9209de193f3",
+              "name": "season",
+              "type": "string",
+              "value": "={{ $json.Season }}"
+            },
+            {
+              "id": "280c6c5c-1952-56df-9057-7b55ecf6e375",
+              "name": "episode",
+              "type": "string",
+              "value": "={{ $json.Episode }}"
+            },
+            {
+              "id": "e7de3b10-4c35-53fc-a5eb-bf7ed99ec5fe",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.Title }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "340780eb-61da-58f6-8cac-5b593603eefc",
+      "name": "Set Publish Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        13880,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "postContentText": "={{ $json.postText }}",
+        "postContentMediaUrls": "={{ $json.mediaUrl }}",
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "platform": "youtube",
+        "postCreateYoutubeOptionTitle": "={{ $json.title }}",
+        "postCreateYoutubeOptionPrivacyStatus": "private",
+        "postCreateYoutubeOptionShouldNotifySubscribers": false
+      },
+      "id": "aca8c212-62a0-5d98-a2d5-6bd1721a53fb",
+      "name": "Publish \u2192 YouTube",
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        14320,
+        640
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "options": {},
+        "postContentText": "={{ $json.postText }}",
+        "postContentMediaUrls": "={{ $json.mediaUrl }}",
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "platform": "tiktok"
+      },
+      "id": "6fc81214-44f1-557a-b4c2-c43bbc4fb8af",
+      "name": "Publish \u2192 TikTok",
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        14320,
+        760
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "options": {},
+        "postContentText": "={{ $json.postText }}",
+        "postContentMediaUrls": "={{ $json.mediaUrl }}",
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "platform": "instagram"
+      },
+      "id": "60841056-76fe-5c88-80bb-3b6b74ab0e3d",
+      "name": "Publish \u2192 Instagram",
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        14760,
+        640
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "options": {},
+        "postContentText": "={{ $json.postText }}",
+        "postContentMediaUrls": "={{ $json.mediaUrl }}",
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "platform": "facebook",
+        "facebookPageId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "2f55c95b-d1dd-54d9-9483-8edd1e8e167c",
+      "name": "Publish \u2192 Facebook",
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        14760,
+        760
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 4,
+        "options": {}
+      },
+      "id": "66341512-ff75-5e2a-a99e-63700677cddf",
+      "name": "Merge Social Posts",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        15200,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "range": "={{ $json.RowId ? ('A' + $json.RowId + ':Z' + $json.RowId) : ('A' + $json.episodeRowId + ':Z' + $json.episodeRowId) }}",
+        "values": {
+          "parameters": [
+            {
+              "name": "Status",
+              "value": "PUBLISHED"
+            },
+            {
+              "name": "EpisodeUrl",
+              "value": "={{ $json.mediaUrl }}"
+            },
+            {
+              "name": "PublishedAt",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "61b63e44-5c8b-5e2d-8e26-790ec357fc88",
+      "name": "Update Episode Row (PUBLISHED)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        15640,
+        700
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.TELEGRAM_CHAT_ID }}",
+        "text": "={{ \\u2705 *Published* Season {{ $json.season }} Episode {{ $json.episode }} \\u2014 {{ $json.title }}\\n{{ $json.mediaUrl }} }}",
+        "additionalFields": {}
+      },
+      "id": "607bf67e-549b-5d26-b018-c18f87154301",
+      "name": "Episode Published \u2713",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        16080,
+        700
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "range": "={{ 'A' + $json.episodeRowId }}",
+        "values": {
+          "parameters": [
+            {
+              "name": "Status",
+              "value": "NEEDS_REVISION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "197940b6-4a59-5ff3-bc69-33f9061a27c5",
+      "name": "Mark Episode Needs Revision",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        13440,
+        1060
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.TELEGRAM_CHAT_ID }}",
+        "text": "={{ \\u26a0 *Needs revision* Season {{ $json.season }} Episode {{ $json.episode }} \\u2014 {{ $json.title }} }}",
+        "additionalFields": {}
+      },
+      "id": "75d1a1f8-db05-5e01-a187-0bf28a1d17af",
+      "name": "Needs Revision \u26a0",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13880,
+        1060
+      ],
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Sticky: Overview": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Schedule Trigger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Episodes CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Episodes CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse Episodes CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Episodes CSV": {
+      "main": [
+        [
+          {
+            "node": "One Episode at a Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Episode at a Time": {
+      "main": [
+        [
+          {
+            "node": "Fetch Scenes CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Scenes CSV": {
+      "main": [
+        [
+          {
+            "node": "Scenes for This Episode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenes for This Episode": {
+      "main": [
+        [
+          {
+            "node": "Build Image Prompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Build NanoBanana Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build TTS Request": {
+      "main": [
+        [
+          {
+            "node": "Text-to-Speech (ElevenLabs)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build NanoBanana Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Scene Image (NanoBanana)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Scene Image (NanoBanana)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Image": {
+      "main": [
+        [
+          {
+            "node": "Download Edited Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Edited Image": {
+      "main": [
+        [
+          {
+            "node": "Set Image URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-to-Speech (ElevenLabs)": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to Drive": {
+      "main": [
+        [
+          {
+            "node": "Set Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio URL": {
+      "main": [
+        [
+          {
+            "node": "Generate Scene Video (VEO3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Image URL": {
+      "main": [
+        [
+          {
+            "node": "Build VEO3 Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Build VEO3 Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build VEO3 Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Scene Video (VEO3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Scene Video (VEO3)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Render": {
+      "main": [
+        [
+          {
+            "node": "Check VEO3 Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check VEO3 Status": {
+      "main": [
+        [
+          {
+            "node": "Prep Lipsync",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Scene Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Lipsync": {
+      "main": [
+        [
+          {
+            "node": "Build Sync Labs Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Sync Labs Request": {
+      "main": [
+        [
+          {
+            "node": "Lipsync (Sync Labs)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lipsync (Sync Labs)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Lipsync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Lipsync": {
+      "main": [
+        [
+          {
+            "node": "Get Lipsync Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lipsync Result": {
+      "main": [
+        [
+          {
+            "node": "Finalize Scene",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Scene": {
+      "main": [
+        [
+          {
+            "node": "Update Scene Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Scene Failed": {
+      "main": [
+        [
+          {
+            "node": "Update Scene Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Scene Row": {
+      "main": [
+        [
+          {
+            "node": "Last Scene of Episode?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Scene of Episode?": {
+      "main": [
+        [
+          {
+            "node": "Merge Episode Context",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Re-Fetch Scenes CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Fetch Scenes CSV": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Merge Episode Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Episode Context": {
+      "main": [
+        [
+          {
+            "node": "Build Assembly Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Assembly Payload": {
+      "main": [
+        [
+          {
+            "node": "Has Scenes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Scenes?": {
+      "main": [
+        [
+          {
+            "node": "Assemble Episode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Episode": {
+      "main": [
+        [
+          {
+            "node": "Auto-Publish?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-Publish?": {
+      "main": [
+        [
+          {
+            "node": "Upload to Blotato",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Preview to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Blotato": {
+      "main": [
+        [
+          {
+            "node": "Set Publish Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Publish Fields": {
+      "main": [
+        [
+          {
+            "node": "Publish \u2192 YouTube",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publish \u2192 TikTok",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publish \u2192 Instagram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publish \u2192 Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish \u2192 YouTube": {
+      "main": [
+        [
+          {
+            "node": "Merge Social Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish \u2192 TikTok": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Merge Social Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish \u2192 Instagram": {
+      "main": [
+        [],
+        [],
+        [
+          {
+            "node": "Merge Social Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish \u2192 Facebook": {
+      "main": [
+        [],
+        [],
+        [],
+        [
+          {
+            "node": "Merge Social Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Social Posts": {
+      "main": [
+        [
+          {
+            "node": "Update Episode Row (PUBLISHED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Episode Row (PUBLISHED)": {
+      "main": [
+        [
+          {
+            "node": "Episode Published \u2713",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Preview to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Wait for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Approval": {
+      "main": [
+        [
+          {
+            "node": "Merge Approval Context",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Re-Fetch Episodes CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Fetch Episodes CSV": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Merge Approval Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Approval Context": {
+      "main": [
+        [
+          {
+            "node": "Check Approval Flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Approval Flag": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Upload to Blotato",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Episode Needs Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Episode Needs Revision": {
+      "main": [
+        [
+          {
+            "node": "Needs Revision \u26a0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "32a2588a-83d3-5acf-a1a3-6eb34ebdb555",
+  "tags": [],
+  "nodeGroups": [],
+  "meta": {}
+}
