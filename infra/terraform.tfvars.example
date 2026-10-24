@@ -1,0 +1,20 @@
+# Example variable values for the GOLU - Kal Ka Dost AWS production pipeline.
+# Copy to terraform.tfvars and adjust. Do NOT put real secrets here.
+# terraform.tfvars is gitignored; this .example file is tracked.
+
+# Region (defaults to ap-south-1 / Mumbai if omitted).
+aws_region = "ap-south-1"
+
+# Environment name used in tags and derived resource names.
+environment = "prod"
+
+# S3 bucket names must be globally unique. Leave unset (null) to auto-derive
+# "<name_prefix>-assets-<account_id>" and "<name_prefix>-masters-<account_id>".
+assets_bucket_name  = "golu-prod-assets-example"
+masters_bucket_name = "golu-prod-masters-example"
+
+# Emails that receive AWS Budgets threshold alerts (placeholders, not real).
+budget_alert_emails = [
+  "producer@example.com",
+  "pipeline-ops@example.com",
+]

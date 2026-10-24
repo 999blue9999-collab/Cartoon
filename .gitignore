@@ -1,0 +1,16 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Local variable files may contain environment-specific values; keep them out of VCS.
+# Example files (*.tfvars.example) ARE tracked.
+*.tfvars
+
+# Provider lock file is intentionally TRACKED for reproducible builds.
+# (do not ignore .terraform.lock.hcl)
+
+# OS cruft
+.DS_Store
