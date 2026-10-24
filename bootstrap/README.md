@@ -20,7 +20,7 @@ plan/apply cycle the GitHub Actions pipeline runs.
   Polly/Transcribe IAM, CloudWatch logs/alarms/dashboards, SNS, AWS Budgets),
   plus read/write to the state backend.
 - The Terraform remote state backend: a private, versioned, encrypted S3 bucket
-  (`golu-prod-tfstate-253270662656`) and a DynamoDB lock table
+  (`golu-prod-tfstate-079184685437`) and a DynamoDB lock table
   (`golu-prod-tfstate-lock`).
 
 ## Why it is separate (chicken-and-egg)
@@ -33,7 +33,7 @@ backend block here) and is applied once, out of band, by an administrator.
 
 ```sh
 cd bootstrap
-cp terraform.tfvars.example terraform.tfvars   # defaults already target account 253270662656 / ap-south-1
+cp terraform.tfvars.example terraform.tfvars   # defaults already target account 079184685437 / ap-south-1
 terraform init
 terraform plan -out tfplan
 terraform apply tfplan
@@ -45,7 +45,7 @@ end-to-end procedure.
 
 ## Account and region
 
-Account `253270662656`, region `ap-south-1` (Mumbai). The provider is pinned to
+Account `079184685437`, region `ap-south-1` (Mumbai). The provider is pinned to
 `allowed_account_ids = [var.aws_account_id]` so an accidental apply against the
 wrong account fails fast.
 

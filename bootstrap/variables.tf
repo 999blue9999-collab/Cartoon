@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "aws_account_id" {
   description = "Target AWS account id. Used to scope the OIDC trust and to name the state bucket. This is the GOLU account."
   type        = string
-  default     = "253270662656"
+  default     = "079184685437"
 }
 
 variable "project_name" {

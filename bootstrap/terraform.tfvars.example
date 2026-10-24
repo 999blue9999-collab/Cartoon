@@ -3,7 +3,7 @@
 # .example file is tracked. No secrets here: these are account/repo names.
 
 aws_region     = "ap-south-1"
-aws_account_id = "253270662656"
+aws_account_id = "079184685437"
 
 project_name = "golu"
 environment  = "prod"
@@ -18,7 +18,7 @@ allowed_git_refs = ["main"]
 allow_pull_request_oidc = true
 
 # Leave null to derive:
-#   state_bucket_name     = "golu-prod-tfstate-253270662656"
+#   state_bucket_name     = "golu-prod-tfstate-079184685437"
 #   state_lock_table_name = "golu-prod-tfstate-lock"
-# state_bucket_name     = "golu-prod-tfstate-253270662656"
+# state_bucket_name     = "golu-prod-tfstate-079184685437"
 # state_lock_table_name = "golu-prod-tfstate-lock"

@@ -35,10 +35,10 @@ permissions:
 # Region and backend configuration are pinned here so no step has to guess.
 # AWS_DEPLOY_ROLE_ARN is a repository variable (Settings -> Secrets and
 # variables -> Actions -> Variables). Expected shape for this project:
-#   arn:aws:iam::253270662656:role/golu-prod-github-deploy
+#   arn:aws:iam::079184685437:role/golu-prod-github-deploy
 env:
   AWS_REGION: ap-south-1
-  TF_STATE_BUCKET: golu-prod-tfstate-253270662656
+  TF_STATE_BUCKET: golu-prod-tfstate-079184685437
   TF_STATE_KEY: infra/terraform.tfstate
   TF_STATE_DYNAMODB_TABLE: golu-prod-tfstate-lock
   TF_WORKING_DIR: infra

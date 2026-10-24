@@ -8,9 +8,9 @@
 # Defaults follow the pattern:
 #   bucket         = <project>-<environment>-tfstate-<account_id>
 #   dynamodb_table = <project>-<environment>-tfstate-lock
-# For this project (project=golu, environment=prod, account=253270662656):
+# For this project (project=golu, environment=prod, account=079184685437):
 
-bucket         = "golu-prod-tfstate-253270662656"
+bucket         = "golu-prod-tfstate-079184685437"
 key            = "infra/terraform.tfstate"
 region         = "ap-south-1"
 dynamodb_table = "golu-prod-tfstate-lock"

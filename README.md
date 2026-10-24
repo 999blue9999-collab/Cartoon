@@ -189,7 +189,7 @@ monitoring), so keep `monthly_budget_usd` and `budget_alert_emails` set.
 The repository ships an OIDC-based CI/CD pipeline in
 [`.github/workflows/terraform.yml`](.github/workflows/terraform.yml): pull
 requests into `main` run `terraform plan`, and merges to `main` run `terraform
-apply`, both against account `253270662656` in `ap-south-1`. Credentials are
+apply`, both against account `079184685437` in `ap-south-1`. Credentials are
 short-lived STS tokens obtained by assuming an IAM role through GitHub OIDC, so
 no long-lived AWS access keys are stored anywhere. The one-time setup (OIDC
 provider, deploy role and policy, S3 + DynamoDB state backend) lives in the

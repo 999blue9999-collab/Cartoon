@@ -4,7 +4,7 @@ This document describes how the `infra/` Terraform module is deployed to AWS
 through GitHub Actions using GitHub OIDC federation, with no long-lived AWS
 access keys stored anywhere.
 
-- **Target account:** `253270662656`
+- **Target account:** `079184685437`
 - **Target region:** `ap-south-1` (Mumbai)
 - **Pipeline:** `terraform plan` on pull requests into `main`, `terraform
   apply` on merges (pushes) to `main`.
@@ -46,7 +46,7 @@ own).
   `sts:AssumeRoleWithWebIdentity` to this repository's `main` branch and
   pull-request subjects;
 - a least-privilege deploy policy sufficient to manage everything in `infra/`;
-- the S3 state bucket (`golu-prod-tfstate-253270662656`) and the DynamoDB lock
+- the S3 state bucket (`golu-prod-tfstate-079184685437`) and the DynamoDB lock
   table (`golu-prod-tfstate-lock`).
 
 ### Steps
@@ -75,7 +75,7 @@ In the GitHub repository, go to **Settings -> Secrets and variables -> Actions
 - **Value:** the `deploy_role_arn` output from `bootstrap/`. Expected shape:
 
   ```
-  arn:aws:iam::253270662656:role/golu-prod-github-deploy
+  arn:aws:iam::079184685437:role/golu-prod-github-deploy
   ```
 
 This is a **variable**, not a secret, because a role ARN is not sensitive. No
@@ -90,7 +90,7 @@ AWS access keys are added to the repository.
 ```sh
 cd infra
 terraform init \
-  -backend-config="bucket=golu-prod-tfstate-253270662656" \
+  -backend-config="bucket=golu-prod-tfstate-079184685437" \
   -backend-config="key=infra/terraform.tfstate" \
   -backend-config="region=ap-south-1" \
   -backend-config="dynamodb_table=golu-prod-tfstate-lock" \

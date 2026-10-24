@@ -18,7 +18,7 @@
 #
 #   2. Individual flags (this is what the GitHub Actions workflow does):
 #        terraform init \
-#          -backend-config="bucket=golu-prod-tfstate-253270662656" \
+#          -backend-config="bucket=golu-prod-tfstate-079184685437" \
 #          -backend-config="key=infra/terraform.tfstate" \
 #          -backend-config="region=ap-south-1" \
 #          -backend-config="dynamodb_table=golu-prod-tfstate-lock" \
