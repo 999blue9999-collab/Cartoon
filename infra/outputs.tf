@@ -68,6 +68,16 @@ output "mediaconvert_role_arn" {
   value       = aws_iam_role.mediaconvert.arn
 }
 
+output "mediaconvert_h264_job_template_name" {
+  description = "Name of the H.264 1080p24 review-master MediaConvert job template; the orchestration layer references this in CreateJob and overrides the input/destination per submission."
+  value       = aws_cloudformation_stack.mediaconvert_h264_1080p_review.outputs["JobTemplateName"]
+}
+
+output "mediaconvert_prores_job_template_name" {
+  description = "Name of the ProRes 1080p24 mezzanine-master MediaConvert job template; the orchestration layer references this in CreateJob and overrides the input/destination per submission."
+  value       = aws_cloudformation_stack.mediaconvert_prores_1080p_mezz.outputs["JobTemplateName"]
+}
+
 output "cloudfront_domain_name" {
   description = "CloudFront domain name fronting the private masters/delivery bucket."
   value       = aws_cloudfront_distribution.masters.domain_name
