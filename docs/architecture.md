@@ -35,10 +35,12 @@ versioning be on so masters and project files stay recoverable.
 Two least-privilege roles:
 
 - **Render-job role** (assumed by `ecs-tasks.amazonaws.com`): reads the assets
-  bucket, reads and writes the masters bucket under `/renders/*` and
-  `/scratch/*` only, and writes CloudWatch Logs scoped to the project's
-  `/aws/batch/<name_prefix>*` log group. There is no account-wide `s3:*` and no
-  resource `*` where a concrete ARN exists.
+  bucket, reads and writes reproducible scratch on the assets bucket under
+  `/scratch/*` (which carries the 14-day expiration lifecycle rule, so scratch
+  stays off the more expensive masters bucket), writes finished frames to the
+  masters bucket under `/renders/*` only, and writes CloudWatch Logs scoped to
+  the project's `/aws/batch/<name_prefix>*` log group. There is no account-wide
+  `s3:*` and no resource `*` where a concrete ARN exists.
 - **Pipeline (orchestration) role** (assumed by Lambda and Step Functions):
   submits and terminates Batch jobs on this project's queue and job definition,
   passes the render-job role to Batch (`iam:PassRole` scoped to that one role),
@@ -59,8 +61,9 @@ queue, and a parameterized container job definition:
   on-demand EC2. Minimum and desired vCPUs are 0 (scale to zero when idle),
   maximum is `render_max_vcpus`.
 - Instance types come from `gpu_instance_types`. The job definition requests 1
-  GPU, 4 vCPU and about 15 GiB so a job fits the smallest candidate type
-  (`g5.xlarge`, which has 1 NVIDIA A10G GPU).
+  GPU, 4 vCPU and 14 GiB (14336 MiB) so a job fits the smallest candidate type
+  (`g5.xlarge`, which has 1 NVIDIA A10G GPU and 16 GiB), leaving about 2 GiB for
+  the ECS agent and the ECS-GPU AMI reservations.
 - Parameters (`episode_id`, `input_prefix`, `output_prefix`, `frame_start`,
   `frame_end`) are substituted into the container command at submit time. The
   container image is `render_container_image`, which is pluggable and
@@ -97,9 +100,14 @@ A CloudFront distribution fronts the private masters bucket through an Origin
 Access Control (SigV4). The bucket stays fully private: a bucket policy grants
 `s3:GetObject` only to the CloudFront service with an `AWS:SourceArn` condition
 matching this distribution, which is compatible with the bucket's public access
-block. Viewers are redirected to HTTPS, the AWS managed CachingOptimized cache
-policy is used, and the price class is `PriceClass_200` (Asia including India,
-Europe, and North America).
+block. Public delivery is restricted to the finished deliverables: the bucket
+policy grants the OAC read only on the `chapters/*` and `feature/*` prefixes,
+and the distribution adds ordered cache behaviors for `chapters/*` and
+`feature/*`. Raw `renders/`, reproducible `scratch/`, and work-in-progress
+`subtitles/` objects are therefore not reachable through the CDN even with a
+known object key (S3 returns 403). Viewers are redirected to HTTPS, the AWS
+managed CachingOptimized cache policy is used, and the price class is
+`PriceClass_200` (Asia including India, Europe, and North America).
 
 ### Monitoring and cost ([`infra/monitoring.tf`](../infra/monitoring.tf))
 
@@ -190,9 +198,11 @@ template through a small CloudFormation stack
 (`aws_cloudformation_stack` wrapping `AWS::MediaConvert::JobTemplate`), which is
 the standard Terraform path for AWS resource types the provider does not expose.
 The templates remain real, named, Terraform-managed resources and stay in the
-state file. One consequence: a job submitter references these templates by name
-(`<name_prefix>-h264-1080p-review` and `<name_prefix>-prores-1080p-mezz`) rather
-than by a direct Terraform resource attribute.
+state file. A job submitter references these templates by name; rather than
+hardcoding the strings, the names are surfaced as Terraform outputs
+(`mediaconvert_h264_job_template_name` and `mediaconvert_prores_job_template_name`,
+sourced from each CloudFormation stack's `JobTemplateName` output), giving the
+orchestration layer a stable reference.
 
 ## IAM and least-privilege summary
 

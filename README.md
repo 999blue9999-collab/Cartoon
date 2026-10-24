@@ -78,7 +78,10 @@ assets in S3  ->  AWS Batch GPU render  ->  MediaConvert master  ->  Transcribe 
    documented Devanagari cleanup step.
 5. **CloudFront deliver.** A CloudFront distribution serves the private masters
    bucket over HTTPS through an Origin Access Control, so the bucket stays
-   private while review and feature cuts stream to viewers.
+   private while review and feature cuts stream to viewers. Public delivery is
+   restricted to the finished `/chapters/chN/` and `/feature/` prefixes; raw
+   renders, scratch, and work-in-progress subtitles are not reachable over the
+   CDN.
 
 A deeper component-by-component description, diagrams, and the scale math are in
 [`docs/architecture.md`](docs/architecture.md).
