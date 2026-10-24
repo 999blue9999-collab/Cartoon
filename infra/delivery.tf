@@ -7,10 +7,18 @@
 # (OAC, SigV4) and an S3 bucket policy that grants read ONLY to this specific
 # distribution. Viewers are forced to HTTPS (redirect-to-https).
 #
-# NOTE: the default cache behavior serves the whole bucket so both the
-# /chapters/chN/ review masters and the /feature/ cut are reachable; restrict
-# or add path-specific behaviors (e.g. signed URLs for review masters) in a
-# hardened deployment.
+# PUBLIC SURFACE IS RESTRICTED TO FINISHED DELIVERABLES. Only the finished
+# /chapters/chN/ and /feature/ masters are served over the CDN. This is enforced
+# at TWO layers (defense in depth):
+#   1. The S3 bucket policy grants the CloudFront OAC s3:GetObject ONLY on the
+#      chapters/* and feature/* key prefixes, so even a request for a known
+#      renders/, scratch/, or subtitles/ object key returns 403 from S3.
+#   2. CloudFront has ordered cache behaviors for chapters/* and feature/* only;
+#      the default behavior exists because CloudFront requires one, but it maps
+#      to the same private origin where the bucket policy denies non-deliverable
+#      prefixes, so nothing outside chapters/ and feature/ is publicly fetchable.
+# Raw render frames, intermediate scratch, and work-in-progress subtitles are
+# therefore NOT reachable through the CDN.
 # -----------------------------------------------------------------------------
 
 resource "aws_cloudfront_origin_access_control" "masters" {
@@ -36,6 +44,10 @@ resource "aws_cloudfront_distribution" "masters" {
     origin_access_control_id = aws_cloudfront_origin_access_control.masters.id
   }
 
+  # The default behavior is mandatory, but the bucket policy below only grants
+  # the OAC read on chapters/* and feature/*, so any path that does not match an
+  # ordered behavior below (e.g. renders/, scratch/, subtitles/) resolves to a
+  # 403 from S3 rather than serving an intermediate object.
   default_cache_behavior {
     target_origin_id       = local.masters_origin_id
     viewer_protocol_policy = "redirect-to-https"
@@ -45,6 +57,28 @@ resource "aws_cloudfront_distribution" "masters" {
 
     # AWS managed "CachingOptimized" cache policy (recommended for S3 origins).
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+  }
+
+  # Finished per-chapter review/mezzanine masters + subtitles are served here.
+  ordered_cache_behavior {
+    path_pattern           = "chapters/*"
+    target_origin_id       = local.masters_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+  }
+
+  # The feature-length cut deliverables.
+  ordered_cache_behavior {
+    path_pattern           = "feature/*"
+    target_origin_id       = local.masters_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }
 
   restrictions {
@@ -69,13 +103,20 @@ resource "aws_cloudfront_distribution" "masters" {
 }
 
 # Bucket policy: allow ONLY this CloudFront distribution (via OAC, matched by
-# the AWS:SourceArn condition) to read objects. The bucket itself stays private.
+# the AWS:SourceArn condition) to read objects, and ONLY under the finished
+# delivery prefixes chapters/* and feature/*. Raw renders/, scratch/, and
+# work-in-progress subtitles/ are intentionally NOT granted, so they cannot be
+# fetched through the CDN even with a known object key. The bucket itself stays
+# fully private (public access block on).
 data "aws_iam_policy_document" "masters_cdn" {
   statement {
-    sid       = "AllowCloudFrontOACRead"
-    effect    = "Allow"
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.masters.arn}/*"]
+    sid     = "AllowCloudFrontOACReadDeliverables"
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.masters.arn}/chapters/*",
+      "${aws_s3_bucket.masters.arn}/feature/*",
+    ]
 
     principals {
       type        = "Service"
