@@ -52,6 +52,12 @@ variable "use_spot" {
   default     = true
 }
 
+variable "render_container_image" {
+  description = "Container image URI for the 3D render job (e.g. an ECR image or public registry reference). The creative render/compositing payload is PLUGGABLE and intentionally NOT provided by this IaC; supply your own image that reads input frames/assets and writes rendered output to S3. The placeholder default must be replaced before real jobs can run."
+  type        = string
+  default     = "public.ecr.aws/amazonlinux/amazonlinux:2023"
+}
+
 variable "monthly_budget_usd" {
   description = "Monthly cost budget in USD used for AWS Budgets alerting. Matches the outline's 2k-6k USD Spot ceiling."
   type        = number

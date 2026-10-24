@@ -13,6 +13,11 @@ environment = "prod"
 assets_bucket_name  = "golu-prod-assets-example"
 masters_bucket_name = "golu-prod-masters-example"
 
+# Container image for the 3D render job. The render/compositing payload is
+# PLUGGABLE and NOT provided by this IaC: point this at your own ECR image.
+# The value below is a non-secret placeholder and must be replaced before use.
+render_container_image = "123456789012.dkr.ecr.ap-south-1.amazonaws.com/golu-render:latest"
+
 # Emails that receive AWS Budgets threshold alerts (placeholders, not real).
 budget_alert_emails = [
   "producer@example.com",
