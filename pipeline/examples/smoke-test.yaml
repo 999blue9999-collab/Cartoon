@@ -7,6 +7,11 @@
 #     --config pipeline/examples/smoke-test.yaml \
 #     --assets-dir /projects/sandbox/golu_project \
 #     --out-dir /projects/sandbox/.animatic-out
+#
+# To burn the Devanagari dialogue into the frames, add --burn-subtitles and
+# point --font at a Devanagari-capable font (e.g. Noto Sans Devanagari). The
+# sidecar .srt is written either way and is the authoritative caption track.
+# You may instead set 'burn_subtitles: true' and 'font_path: ...' below.
 title: "Smoke Test"
 width: 640
 height: 360

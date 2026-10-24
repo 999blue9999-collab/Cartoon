@@ -75,6 +75,7 @@ class EpisodeConfig:
     sample_rate: int = 44100
     total_duration: float | None = None
     font_path: str | None = None
+    burn_subtitles: bool = False
     ambience_seed: int = 29
     rain_divisor: float = 1000.0
     output_basename: str = "episode-animatic"
@@ -194,6 +195,7 @@ def load_config(path: str) -> EpisodeConfig:
             float(data["total_duration"]) if data.get("total_duration") is not None else None
         ),
         font_path=data.get("font_path"),
+        burn_subtitles=bool(data.get("burn_subtitles", False)),
         ambience_seed=int(data.get("ambience_seed", 29)),
         rain_divisor=float(data.get("rain_divisor", 1000.0)),
         output_basename=str(data.get("output_basename", "episode-animatic")),

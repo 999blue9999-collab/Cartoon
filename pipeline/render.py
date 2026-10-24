@@ -143,14 +143,18 @@ def render_frames(
     frames_dir: str,
     *,
     rain_threshold: float = 10.0,
+    caption_font=None,
     progress=None,
 ) -> int:
     """Render all unique frames as JPEGs into ``frames_dir``.
 
     ``prepared_shots`` are :class:`_PreparedShot` instances (built by the
-    builder) with their events carrying ``t0/t1/env/patch``. Returns the number
-    of frames written.
+    builder) with their events carrying ``t0/t1/env/patch`` (and ``text`` when
+    burn-in is enabled). When ``caption_font`` is supplied, the active dialogue
+    event's text is burned in as a lower-third caption during ``[t0, t1)``.
+    Returns the number of frames written.
     """
+    from . import text as text_mod
     os.makedirs(frames_dir, exist_ok=True)
     W, H = episode.width, episode.height
     fps = episode.fps_unique
@@ -216,9 +220,14 @@ def render_frames(
         arr[..., 0] *= 1.012
         arr[..., 2] *= 1.008
         arr *= vig[..., None]
-        Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(
-            os.path.join(frames_dir, f"f{fi:05d}.jpg"), quality=87
-        )
+        frame = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
+
+        # Burn-in caption (after grade so the text stays crisp). The sidecar
+        # .srt remains the authoritative caption track regardless.
+        if caption_font is not None and active and active.get("text"):
+            text_mod.draw_caption(frame, active["text"], caption_font)
+
+        frame.save(os.path.join(frames_dir, f"f{fi:05d}.jpg"), quality=87)
         if progress and fi % 600 == 0:
             progress(fi, n)
 

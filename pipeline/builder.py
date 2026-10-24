@@ -12,6 +12,7 @@ from . import config as config_mod
 from . import ffmpeg
 from . import render as render_mod
 from . import subtitles
+from . import text as text_mod
 
 
 @dataclass
@@ -34,18 +35,36 @@ def build(
     out_dir: str,
     *,
     font_path: str | None = None,
+    burn_subtitles: bool | None = None,
     fps_unique: int | None = None,
     scratch_dir: str | None = None,
     progress=None,
 ) -> BuildResult:
-    """Build a complete episode animatic and return the output paths."""
+    """Build a complete episode animatic and return the output paths.
+
+    When burn-in is enabled (CLI ``--burn-subtitles`` or episode
+    ``burn_subtitles: true``), the active dialogue event's text is burned into
+    each frame using a Devanagari-capable font. The sidecar ``.srt`` is written
+    regardless, and remains the authoritative caption track.
+    """
     episode = config_mod.load_config(config_path)
     if fps_unique is not None:
         episode.fps_unique = fps_unique
     if font_path is not None:
         episode.font_path = font_path
+    if burn_subtitles is not None:
+        episode.burn_subtitles = burn_subtitles
 
     config_mod.validate(episode, assets_dir, probe_durations=True)
+
+    # Resolve the caption font up front (before the slow render) so a missing
+    # or non-Devanagari font fails fast with a clear, actionable error.
+    caption_font = None
+    if episode.burn_subtitles:
+        size = max(14, int(episode.height * 0.05))
+        caption_font = text_mod.resolve_devanagari_font(
+            font_path, episode.font_path, size
+        )
 
     os.makedirs(out_dir, exist_ok=True)
     sr = episode.sample_rate
@@ -69,7 +88,7 @@ def build(
             t1 = t0 + len(samples) / sr
             ps.events.append(
                 {"t0": t0, "t1": t1, "env": env, "patch": patch,
-                 "x": ev.x, "y": ev.y, "w": ev.w}
+                 "x": ev.x, "y": ev.y, "w": ev.w, "text": ev.text}
             )
             placed_events.append((t0, samples))
             timed_events.append((t0, t1, ev.text))
@@ -96,7 +115,8 @@ def build(
     n_frames = 0
     try:
         n_frames = render_mod.render_frames(
-            episode, prepared_shots, frames_dir, progress=progress
+            episode, prepared_shots, frames_dir,
+            caption_font=caption_font, progress=progress
         )
         _mux(episode, frames_dir, wav_path, mp4_path, total)
     finally:
