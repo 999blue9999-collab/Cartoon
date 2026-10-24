@@ -91,11 +91,26 @@ A deeper component-by-component description, diagrams, and the scale math are in
 ```
 Cartoon/
   README.md                      this file
+  .github/
+    workflows/
+      terraform.yml              OIDC CI/CD: plan on PR, apply on merge to main
   docs/
     architecture.md              deep dive, diagrams, scale math, limitations
+    deployment.md                OIDC pipeline + bootstrap + state backend guide
+  bootstrap/                     one-time, apply-by-hand OIDC + state backend
+    versions.tf                  Terraform and AWS provider version pins
+    providers.tf                 AWS provider, region, account guard rail
+    variables.tf                 account/repo/state inputs
+    oidc.tf                      GitHub OIDC provider + deploy role trust policy
+    deploy_policy.tf             least-privilege deploy policy
+    state_backend.tf             S3 state bucket + DynamoDB lock table
+    outputs.tf                   deploy role ARN, state bucket/table
+    terraform.tfvars.example     example variable values (no secrets)
   infra/                         Terraform root module (flat layout)
     versions.tf                  Terraform and AWS provider version pins
     providers.tf                 AWS provider, region, default tags
+    backend.tf                   partial S3 backend (configured at init time)
+    backend.hcl.example          example backend config (no secrets)
     variables.tf                 all input variables
     main.tf                      shared locals and account lookup
     storage.tf                   S3 assets and masters buckets
@@ -168,6 +183,18 @@ terraform apply tfplan
 Review the plan before applying. The configuration provisions billable
 resources (S3, a Batch GPU compute environment, a CloudFront distribution, and
 monitoring), so keep `monthly_budget_usd` and `budget_alert_emails` set.
+
+### Automated deploys via GitHub Actions (OIDC, no access keys)
+
+The repository ships an OIDC-based CI/CD pipeline in
+[`.github/workflows/terraform.yml`](.github/workflows/terraform.yml): pull
+requests into `main` run `terraform plan`, and merges to `main` run `terraform
+apply`, both against account `079184685437` in `ap-south-1`. Credentials are
+short-lived STS tokens obtained by assuming an IAM role through GitHub OIDC, so
+no long-lived AWS access keys are stored anywhere. The one-time setup (OIDC
+provider, deploy role and policy, S3 + DynamoDB state backend) lives in the
+separate [`bootstrap/`](bootstrap/) module. See
+[`docs/deployment.md`](docs/deployment.md) for the full end-to-end procedure.
 
 ## LIMITATIONS
 
