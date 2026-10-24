@@ -57,3 +57,33 @@ output "render_job_definition_arn" {
   description = "ARN of the parameterized AWS Batch render job definition."
   value       = aws_batch_job_definition.render.arn
 }
+
+output "mediaconvert_queue_arn" {
+  description = "ARN of the MediaConvert mastering queue."
+  value       = aws_media_convert_queue.masters.arn
+}
+
+output "mediaconvert_role_arn" {
+  description = "ARN of the role MediaConvert assumes for mastering jobs."
+  value       = aws_iam_role.mediaconvert.arn
+}
+
+output "cloudfront_domain_name" {
+  description = "CloudFront domain name fronting the private masters/delivery bucket."
+  value       = aws_cloudfront_distribution.masters.domain_name
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront masters/delivery distribution."
+  value       = aws_cloudfront_distribution.masters.id
+}
+
+output "budget_name" {
+  description = "Name of the monthly AWS Budgets cost budget."
+  value       = aws_budgets_budget.monthly.name
+}
+
+output "alerts_sns_topic_arn" {
+  description = "ARN of the SNS topic used for budget/operational alarm notifications."
+  value       = aws_sns_topic.alerts.arn
+}
