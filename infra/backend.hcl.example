@@ -1,0 +1,17 @@
+# Example partial backend configuration for the infra/ root module.
+#
+# Copy to backend.hcl and run:  terraform init -backend-config=backend.hcl
+# backend.hcl is gitignored; this .example file is tracked. No secrets live
+# here: these are resource names, not credentials.
+#
+# The bucket and dynamodb_table below are created by the bootstrap/ module.
+# Defaults follow the pattern:
+#   bucket         = <project>-<environment>-tfstate-<account_id>
+#   dynamodb_table = <project>-<environment>-tfstate-lock
+# For this project (project=golu, environment=prod, account=253270662656):
+
+bucket         = "golu-prod-tfstate-253270662656"
+key            = "infra/terraform.tfstate"
+region         = "ap-south-1"
+dynamodb_table = "golu-prod-tfstate-lock"
+encrypt        = true

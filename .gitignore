@@ -9,6 +9,9 @@ crash.*.log
 # Example files (*.tfvars.example) ARE tracked.
 *.tfvars
 
+# Local backend configuration (resolved partial config); the .example is tracked.
+backend.hcl
+
 # Provider lock file is intentionally TRACKED for reproducible builds.
 # (do not ignore .terraform.lock.hcl)
 
