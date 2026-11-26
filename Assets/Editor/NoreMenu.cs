@@ -53,8 +53,11 @@ namespace Nore.EditorTools
             game.AddComponent<RuntimeUI>();
 
             if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
-            EditorSceneManager.SaveScene(scene, "Assets/Scenes/NoreDemo.unity");
-            Debug.Log("[Nore] Demo scene created at Assets/Scenes/NoreDemo.unity — press Play.");
+            // Keep the committed, empty NoreDemo.unity as the cloud build scene; this menu
+            // creates a richer optional scene with authored camera/light/game objects.
+            EditorSceneManager.SaveScene(scene, "Assets/Scenes/NoreDemoFull.unity");
+            Debug.Log("[Nore] Optional full demo scene created at Assets/Scenes/NoreDemoFull.unity — press Play. " +
+                      "Assets/Scenes/NoreDemo.unity remains the cloud build scene.");
         }
     }
 }

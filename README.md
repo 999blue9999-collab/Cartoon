@@ -24,7 +24,10 @@ performance-oriented aggregated squads.
 1. Open this repository folder with **Unity 6 (6000.0.x)**. No packages, prefabs or scene setup are
    needed — `GameController` bootstraps itself via `[RuntimeInitializeOnLoadMethod]`.
 2. Press **Play**. The IMGUI window is the whole game.
-3. Optional: menu **Nore → Create Demo Scene**, **Nore → Validate Data**, **Nore → Run Self Tests**.
+3. Optional menus: **Nore → Create Demo Scene**, **Nore → Validate Data**, **Nore → Run Self Tests**,
+   and **Nore → Cloud Build → Ensure Build Scene / Verify Project / Build Player**.
+   A committed empty scene (`Assets/Scenes/NoreDemo.unity`) is already enabled in
+   `ProjectSettings/EditorBuildSettings.asset`, so Player/cloud builds need no scene authoring.
 
 Tabs: **Overview · Stronghold · Army · Heroes · Dragons · Battle · World · System**.
 
@@ -38,6 +41,21 @@ Tabs: **Overview · Stronghold · Army · Heroes · Dragons · Battle · World �
 | Battle | Live 14×8 grid, unit stacks, morale/HP bars, **click a hero skill then click a grid cell to cast**, pause/x1/x2/x4, event log, state hash, result |
 | World | 18 map nodes (loot / events / bosses / caravans), 12 cities with stronghold sieges, Houses, 6 PvP modes, 5 events |
 | System | Save/Load/New realm, export JSON overrides, 15 self-tests, event log |
+
+### Unity Cloud / Build Automation
+The repo is cloud-build-ready: committed empty scene + build settings GUID chain, an
+`[InitializeOnLoad]` safety net (`Assets/Editor/CloudBuildSetup.cs`), and `-executeMethod` entry
+points for a verify gate and a Player build. Creating the cloud project, connecting the Git repo
+and starting a build are **dashboard-only** steps — see [`docs/UNITY_CLOUD.md`](docs/UNITY_CLOUD.md).
+Arena does not provide a Unity Cloud connector, so those steps must be done in the Unity Dashboard
+(Project Settings → Services to link a Project ID; Build Automation → Source Control to connect
+GitHub; build target at Unity `6000.0.32f1`).
+
+```bash
+# optional local/CI batch verification + build
+Unity -batchmode -quit -executeMethod Nore.EditorTools.CloudBuildSetup.Verify
+Unity -batchmode -quit -executeMethod Nore.EditorTools.CloudBuildSetup.Build
+```
 
 ### Browser companion (no Unity install needed)
 ```bash
@@ -104,7 +122,8 @@ See `docs/ARCHITECTURE.md`, `docs/DATA_SCHEMA.md` and `docs/COMBAT_SPEC.md` for 
 | Command | Result |
 |---|---|
 | `python3 tools/validate_data.py` | ✅ 9 JSON files, schemas, reserved-word guard, all cross-references, 35 conversion mappings |
-| `node tools/syntax_check.mjs` | ✅ 19/19 C# files parse cleanly (tree-sitter C# grammar) |
+| `python3 tools/validate_unity_project.py` | ✅ 30 checks: scene/meta GUID chain, `EditorBuildSettings`, Unity version, cloud build hooks |
+| `node tools/syntax_check.mjs` | ✅ 20/20 C# files parse cleanly (tree-sitter C# grammar) |
 | `node tools/sim_harness.mjs` | ✅ 9/9 combat checks (determinism, ammo, Lich resist, Command morale, Sylvani ramparts, Rakan Fury, 200k troops, offline math, conversion) |
 | `node tools/dom_smoke.mjs` | ✅ 12/12 browser UI smoke checks (boot, deploy, cast, upgrade, race switch, explore, tests) |
 | Unity Play | `Nore.Core.SelfTests` runs 15 checks automatically; results in the **System** tab / console |
@@ -132,11 +151,13 @@ Assets/
     World/           WorldState.cs
     Runtime/         GameController.cs, RuntimeUI.cs, Widgets.cs, PanelsBase.cs,
                      PanelsRpg.cs, BattlePanel.cs
-  Editor/            NoreMenu.cs
-Packages/manifest.json, ProjectSettings/ProjectVersion.txt
+  Editor/            NoreMenu.cs, CloudBuildSetup.cs
+  Scenes/            NoreDemo.unity (+ .meta)   (empty committed build scene)
+ProjectSettings/     ProjectVersion.txt, EditorBuildSettings.asset
+Packages/manifest.json
 preview/             index.html, style.css, app.js, sim.mjs   (browser companion)
-tools/               validate_data.py, syntax_check.mjs, sim_harness.mjs, dom_smoke.mjs
-docs/                ARCHITECTURE.md, DATA_SCHEMA.md, COMBAT_SPEC.md
+tools/               validate_data.py, validate_unity_project.py, syntax_check.mjs, sim_harness.mjs, dom_smoke.mjs
+docs/                ARCHITECTURE.md, DATA_SCHEMA.md, COMBAT_SPEC.md, UNITY_CLOUD.md
 ```
 
 ---
