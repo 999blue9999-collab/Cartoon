@@ -1,0 +1,45 @@
+{
+  "trees": [
+    {
+      "id": "protection", "name": "Protection", "description": "Survivability and healing. Key for Azure and Jade.",
+      "milestones": [
+        { "points": 25,  "label": "Scaled Hide",     "stat": "dragonResistBp",   "valueBp": 800  },
+        { "points": 50,  "label": "Vitality",        "stat": "dragonHpBp",       "valueBp": 1500 },
+        { "points": 109, "label": "Final: Aegis",    "stat": "troopResistBp",    "valueBp": 2200 },
+        { "points": 159, "label": "Awakening Gate",  "stat": "healBp",           "valueBp": 3000 }
+      ]
+    },
+    {
+      "id": "destruction", "name": "Destruction", "description": "Elemental damage and troop attack buffs.",
+      "milestones": [
+        { "points": 25,  "label": "Elemental Fang",  "stat": "dragonAttackBp",   "valueBp": 1200 },
+        { "points": 50,  "label": "War Cry",         "stat": "troopAttackBp",    "valueBp": 1000 },
+        { "points": 109, "label": "Final: Cataclysm","stat": "dragonAttackBp",   "valueBp": 3500 },
+        { "points": 159, "label": "Awakening Gate",  "stat": "troopAttackBp",    "valueBp": 2500 }
+      ]
+    },
+    {
+      "id": "support", "name": "Support", "description": "Troop buffs, morale and march utility.",
+      "milestones": [
+        { "points": 25,  "label": "Draconic Aura",   "stat": "commandBonus",     "valueBp": 400  },
+        { "points": 50,  "label": "Swift Wings",     "stat": "troopSpeedBp",     "valueBp": 1200 },
+        { "points": 109, "label": "Final: Rally",    "stat": "moraleBonus",      "valueBp": 1200 },
+        { "points": 159, "label": "Awakening Gate",  "stat": "commandBonus",     "valueBp": 1000 }
+      ]
+    }
+  ],
+  "items": [
+    { "id": "azure", "name": "Azure", "element": "ice",   "role": "Tank / Healer",   "primaryTree": "protection",  "baseAttack": 180, "baseHp": 4200, "tiers": ["rare", "epic", "legendary", "divine", "supreme"], "ability": "Frost Aegis: shields and heals the frontline", "description": "Ice dragon; the backbone of a Protection build." },
+    { "id": "ruby",  "name": "Ruby",  "element": "fire",  "role": "Burst Damage",    "primaryTree": "destruction", "baseAttack": 320, "baseHp": 2800, "tiers": ["rare", "epic", "legendary", "divine", "supreme"], "ability": "Flame Breath: magic damage in a cone",       "description": "Fire dragon; highest raw elemental damage." },
+    { "id": "jade",  "name": "Jade",  "element": "poison","role": "Heal / Support",  "primaryTree": "protection",  "baseAttack": 150, "baseHp": 3600, "tiers": ["rare", "epic", "legendary", "divine", "supreme"], "ability": "Verdant Mist: heal-over-time and cleanse",   "description": "Poison dragon used as a healing support platform." },
+    { "id": "onyx",  "name": "Onyx",  "element": "lava",  "role": "Siege / Control", "primaryTree": "destruction", "baseAttack": 280, "baseHp": 3400, "tiers": ["rare", "epic", "legendary", "divine", "supreme"], "ability": "Lava Rift: burns ramparts and walls",        "description": "Lava dragon; excels in city sieges." }
+  ],
+  "awakening": {
+    "allTreesPoints": 159,
+    "primaryTreePoints": 109,
+    "bonusLabel": "Draconic Awakening",
+    "bonusHpBp": 2500,
+    "bonusAttackBp": 2500,
+    "bonusCommandBonus": 10
+  }
+}

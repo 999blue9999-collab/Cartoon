@@ -1,0 +1,65 @@
+{
+  "regions": ["nore", "drake", "sait"],
+  "kingdoms": [
+    { "id": "athaly",  "name": "Athaly",  "color": "#4FB3C7", "location": "northeast", "bonus": "Early Silver III Orc mercenaries", "description": "Powerhouse kingdom with borders reaching most medium and large cities." },
+    { "id": "dunwolf", "name": "Dunwolf", "color": "#F6B26B", "location": "north",     "bonus": "Caravan escort speed",           "description": "Rugged northern marches; strong defensive play." },
+    { "id": "hyral",   "name": "Hyral",   "color": "#93C47D", "location": "west",      "bonus": "Access to several large cities",  "description": "Unfavorable for beginners but rich in late-game targets." },
+    { "id": "icarum",  "name": "Icarum",  "color": "#8E7CC3", "location": "south",     "bonus": "Central resource escort",        "description": "Religious center of Nore; ideal for mid-game logistics." },
+    { "id": "neferak", "name": "Neferak", "color": "#FFD966", "location": "peninsula", "bonus": "Trade income",                   "description": "Isolated desert peninsula with natural defenses." },
+    { "id": "skarn",   "name": "Skarn",   "color": "#6D9EEB", "location": "east",      "bonus": "Mech workshop discount",         "description": "Industrial eastern kingdom favored by Dwarf players." }
+  ],
+  "cities": [
+    { "id": "athaly_vael",     "name": "Vael",        "kingdom": "athaly",  "tier": 3, "strongholds": 6, "garrisonPower": 9000,  "resourceBonus": "gold",   "x": 70, "y": 18 },
+    { "id": "athaly_mere",     "name": "Mereth",      "kingdom": "athaly",  "tier": 2, "strongholds": 4, "garrisonPower": 5200,  "resourceBonus": "wood",   "x": 62, "y": 30 },
+    { "id": "dunwolf_holt",    "name": "Holt",        "kingdom": "dunwolf", "tier": 2, "strongholds": 4, "garrisonPower": 5600,  "resourceBonus": "wood",   "x": 42, "y": 12 },
+    { "id": "dunwolf_karr",    "name": "Karr",        "kingdom": "dunwolf", "tier": 1, "strongholds": 3, "garrisonPower": 3100,  "resourceBonus": "gold",   "x": 30, "y": 22 },
+    { "id": "hyral_glen",      "name": "Glenhallow",  "kingdom": "hyral",   "tier": 2, "strongholds": 5, "garrisonPower": 6100,  "resourceBonus": "wood",   "x": 14, "y": 44 },
+    { "id": "hyral_tarn",      "name": "Tarn",        "kingdom": "hyral",   "tier": 3, "strongholds": 6, "garrisonPower": 9800,  "resourceBonus": "mana",   "x": 8,  "y": 60 },
+    { "id": "icarum_sol",      "name": "Solium",      "kingdom": "icarum",  "tier": 3, "strongholds": 6, "garrisonPower": 9400,  "resourceBonus": "mana",   "x": 46, "y": 78 },
+    { "id": "icarum_vesper",   "name": "Vesper",      "kingdom": "icarum",  "tier": 1, "strongholds": 3, "garrisonPower": 2900,  "resourceBonus": "gold",   "x": 58, "y": 68 },
+    { "id": "neferak_sun",     "name": "Sunkhret",    "kingdom": "neferak", "tier": 2, "strongholds": 4, "garrisonPower": 5800,  "resourceBonus": "gold",   "x": 84, "y": 72 },
+    { "id": "neferak_dune",    "name": "Dunewake",    "kingdom": "neferak", "tier": 1, "strongholds": 3, "garrisonPower": 3000,  "resourceBonus": "mana",   "x": 92, "y": 56 },
+    { "id": "skarn_forge",     "name": "Forgehold",   "kingdom": "skarn",   "tier": 3, "strongholds": 6, "garrisonPower": 9600,  "resourceBonus": "wood",   "x": 88, "y": 32 },
+    { "id": "skarn_cinder",    "name": "Cinder",      "kingdom": "skarn",   "tier": 1, "strongholds": 3, "garrisonPower": 3200,  "resourceBonus": "gold",   "x": 80, "y": 44 }
+  ],
+  "nodes": [
+    { "id": "n01", "name": "Sunlit Mine",        "kind": "gold",    "region": "nore",   "kingdom": "athaly",  "x": 66, "y": 22, "reward": { "gold": 1800, "wood": 0,    "mana": 0,   "linari": 0, "soulbits": 0 }, "enemyRace": "",       "label": "Gold cache" },
+    { "id": "n02", "name": "Whispering Grove",   "kind": "wood",    "region": "nore",   "kingdom": "athaly",  "x": 58, "y": 34, "reward": { "gold": 0,    "wood": 1600, "mana": 0,   "linari": 0, "soulbits": 0 }, "enemyRace": "",       "label": "Timber" },
+    { "id": "n03", "name": "Abandoned Convoy",   "kind": "caravan", "region": "nore",   "kingdom": "athaly",  "x": 72, "y": 40, "reward": { "gold": 900,  "wood": 700,  "mana": 100, "linari": 0, "soulbits": 0 }, "enemyRace": "",       "label": "Escort or intercept" },
+    { "id": "n04", "name": "Rakan Ambush",       "kind": "enemy",   "region": "nore",   "kingdom": "hyral",   "x": 18, "y": 40, "reward": { "gold": 1200, "wood": 400,  "mana": 0,   "linari": 0, "soulbits": 2 }, "enemyRace": "rakan", "label": "Battle: Rakan warband" },
+    { "id": "n05", "name": "Ley Line Rift",      "kind": "mana",    "region": "nore",   "kingdom": "hyral",   "x": 12, "y": 62, "reward": { "gold": 0,    "wood": 0,    "mana": 900, "linari": 0, "soulbits": 0 }, "enemyRace": "",       "label": "Mana cache" },
+    { "id": "n06", "name": "Icaran Shrine",     "kind": "event",   "region": "nore",   "kingdom": "icarum",  "x": 48, "y": 74, "reward": { "gold": 0,    "wood": 0,    "mana": 300, "linari": 25, "soulbits": 3 }, "enemyRace": "",      "label": "Trigger an event" },
+    { "id": "n07", "name": "Icarian Obelisk",   "kind": "event",   "region": "nore",   "kingdom": "icarum",  "x": 56, "y": 66, "reward": { "gold": 500,  "wood": 0,    "mana": 0,   "linari": 40, "soulbits": 0 }, "enemyRace": "",      "label": "Obelisk milestone" },
+    { "id": "n08", "name": "Bone Wastes",       "kind": "enemy",   "region": "nore",   "kingdom": "neferak", "x": 86, "y": 68, "reward": { "gold": 1600, "wood": 0,    "mana": 200, "linari": 0, "soulbits": 2 }, "enemyRace": "lich",  "label": "Battle: Lich cohort" },
+    { "id": "n09", "name": "Skarn Foundry",     "kind": "wood",    "region": "nore",   "kingdom": "skarn",   "x": 86, "y": 36, "reward": { "gold": 400,  "wood": 1900, "mana": 0,   "linari": 0, "soulbits": 0 }, "enemyRace": "",      "label": "Timber and scrap" },
+    { "id": "n10", "name": "Dwarf Cannon Park", "kind": "enemy",   "region": "nore",   "kingdom": "skarn",   "x": 80, "y": 48, "reward": { "gold": 1800, "wood": 600,  "mana": 0,   "linari": 0, "soulbits": 3 }, "enemyRace": "dwarf", "label": "Battle: Dwarf battery" },
+    { "id": "n11", "name": "Dunwolf Ford",      "kind": "caravan", "region": "nore",   "kingdom": "dunwolf", "x": 36, "y": 18, "reward": { "gold": 700,  "wood": 1100, "mana": 0,   "linari": 0, "soulbits": 0 }, "enemyRace": "",      "label": "Escort or intercept" },
+    { "id": "n12", "name": "Sylvani Thicket",   "kind": "enemy",   "region": "nore",   "kingdom": "icarum",  "x": 40, "y": 70, "reward": { "gold": 900,  "wood": 1300, "mana": 100, "linari": 0, "soulbits": 2 }, "enemyRace": "sylvani", "label": "Battle: Sylvani wardens" },
+    { "id": "n13", "name": "Azure Nest",        "kind": "boss",    "region": "drake",  "kingdom": "athaly",  "x": 74, "y": 8,  "reward": { "gold": 3000, "wood": 0,    "mana": 800, "linari": 60, "soulbits": 5 }, "enemyRace": "human", "label": "Dragon boss: Azure" },
+    { "id": "n14", "name": "Ruby Caldera",      "kind": "boss",    "region": "sait",   "kingdom": "skarn",   "x": 94, "y": 24, "reward": { "gold": 3600, "wood": 0,    "mana": 900, "linari": 80, "soulbits": 6 }, "enemyRace": "dwarf", "label": "Dragon boss: Ruby" },
+    { "id": "n15", "name": "Drake Shore",       "kind": "mana",    "region": "drake",  "kingdom": "neferak", "x": 96, "y": 84, "reward": { "gold": 0,    "wood": 0,    "mana": 1200,"linari": 0, "soulbits": 0 }, "enemyRace": "",      "label": "Distant mana cache" },
+    { "id": "n16", "name": "Sait Ruins",        "kind": "event",   "region": "sait",   "kingdom": "icarum",  "x": 22, "y": 88, "reward": { "gold": 1200, "wood": 0,    "mana": 400, "linari": 30, "soulbits": 4 }, "enemyRace": "",     "label": "Distant event" },
+    { "id": "n17", "name": "Balmford Gate",     "kind": "event",   "region": "nore",   "kingdom": "hyral",   "x": 24, "y": 54, "reward": { "gold": 800,  "wood": 0,    "mana": 200, "linari": 20, "soulbits": 4 }, "enemyRace": "",     "label": "Co-op event entrance" },
+    { "id": "n18", "name": "Void Obelisk",      "kind": "boss",    "region": "nore",   "kingdom": "icarum",  "x": 50, "y": 56, "reward": { "gold": 2200, "wood": 0,    "mana": 700, "linari": 50, "soulbits": 6 }, "enemyRace": "lich",  "label": "Void challenge stage" }
+  ],
+  "pvpModes": [
+    { "id": "arena",          "name": "PvP Arena",       "teamSize": 1,  "scoring": "win/loss rating",        "rewardLinari": 40,  "description": "Direct hero + troop composition test." },
+    { "id": "territory_war",  "name": "Territory Wars",  "teamSize": 20, "scoring": "zone control time",      "rewardLinari": 120, "description": "Coordinated joint sieges for key map zones." },
+    { "id": "world_duel",     "name": "World Duels",     "teamSize": 1,  "scoring": "Might/Magic/Stamina/Command comparison", "rewardLinari": 25, "description": "Live hero attribute duel on the world map." },
+    { "id": "duel_tower",     "name": "Duel Tower",      "teamSize": 1,  "scoring": "highest cleared floor",  "rewardLinari": 60,  "description": "Climb increasingly difficult encounters." },
+    { "id": "nexus",          "name": "Nexus Battles",   "teamSize": 20, "scoring": "karma points from occupation, flag carry and damage", "rewardLinari": 200, "description": "Cross-server timed battle; respawn in up to 90 seconds." },
+    { "id": "clash_of_fate",  "name": "Clash of Fate",   "teamSize": 20, "scoring": "weekly season, up to 6 rounds", "rewardLinari": 300, "description": "Union War: titles, Linari, divine dragon eggs, Badges of Bravery." }
+  ],
+  "events": [
+    { "id": "balmford_swamp", "name": "Balmford Swamp",      "cadence": "weekly",  "partySize": 3, "reward": "time-ranked prizes",        "description": "Co-op race through 3 boss levels." },
+    { "id": "daily_chests",   "name": "Daily Activity",      "cadence": "daily",   "partySize": 1, "reward": "chest every 50 activity up to 350", "description": "Activity resets daily." },
+    { "id": "void",           "name": "Void Challenges",     "cadence": "daily",   "partySize": 1, "reward": "stage rewards up to level 160", "description": "Endless PvE ladder." },
+    { "id": "awakening",      "name": "Awakening Events",    "cadence": "seasonal","partySize": 1, "reward": "dragon awakening materials", "description": "Long, difficult task chains." },
+    { "id": "lucky_wheel",    "name": "Lucky Wheel",         "cadence": "weekly",  "partySize": 1, "reward": "spin-ticket deals",         "description": "Cosmetic and resource wheel." }
+  ],
+  "houses": [
+    { "id": "house_ember",  "name": "House Ember",  "level": 1, "motto": "Hold the gate." },
+    { "id": "house_tide",   "name": "House Tide",   "level": 1, "motto": "Trade, then take." },
+    { "id": "house_thorn",  "name": "House Thorn",  "level": 1, "motto": "The forest remembers." }
+  ]
+}

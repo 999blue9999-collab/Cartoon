@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "tickRate": 10,
+  "maxBattleTicks": 1800,
+  "maxSquads": 96,
+  "grid": {
+    "columns": 14,
+    "rows": 8,
+    "attackerMaxColumn": 4,
+    "defenderMinColumn": 9
+  },
+  "morale": {
+    "baseValue": 1000,
+    "commandPerPoint": 12,
+    "casualtyShockPerPercent": 9,
+    "routThreshold": 260,
+    "rallyThreshold": 380,
+    "rallyTicks": 30,
+    "allyRoutShock": 45,
+    "heroDeathShock": 120,
+    "updateIntervalTicks": 5,
+    "shockDecayPerTick": 1
+  },
+  "combat": {
+    "defenseSoftCapBp": 30000,
+    "magicResistCapBp": 9000,
+    "moraleDamageFloorBp": 5000,
+    "routedEscapeTicks": 60,
+    "commandAuraRange": 4000,
+    "commandAuraFalloffBp": 5000,
+    "criticalChanceBp": 500,
+    "criticalBonusBp": 15000
+  },
+  "roleCounters": [
+    { "attacker": "heavy",   "defender": "cavalry", "bp": 14000 },
+    { "attacker": "heavy",   "defender": "line",    "bp": 11000 },
+    { "attacker": "line",    "defender": "light",   "bp": 13000 },
+    { "attacker": "line",    "defender": "heavy",   "bp": 12000 },
+    { "attacker": "light",   "defender": "siege",   "bp": 13500 },
+    { "attacker": "light",   "defender": "line",    "bp": 11500 },
+    { "attacker": "cavalry", "defender": "line",    "bp": 14500 },
+    { "attacker": "cavalry", "defender": "siege",   "bp": 13000 },
+    { "attacker": "clergy",  "defender": "heavy",   "bp": 11000 },
+    { "attacker": "siege",   "defender": "heavy",   "bp": 13000 },
+    { "attacker": "siege",   "defender": "clergy",  "bp": 12000 },
+    { "attacker": "heavy",   "defender": "siege",   "bp": 9000  }
+  ],
+  "offline": {
+    "maxCatchupSeconds": 28800,
+    "productionBatchSeconds": 60,
+    "energyRegenSeconds": 300,
+    "dailyResetSeconds": 86400
+  },
+  "start": {
+    "gold": 18000,
+    "wood": 12000,
+    "mana": 6000,
+    "prosperity": 0,
+    "linari": 0,
+    "soulbits": 30,
+    "activity": 0,
+    "strongholdLevel": 1,
+    "race": "human",
+    "kingdom": "athaly"
+  },
+  "training": {
+    "baseSecondsPerUnit": 4,
+    "hospitalHealSecondsPerUnit": 3,
+    "conversionCostBp": 2500
+  },
+  "progression": {
+    "heroXpPerLevel": 100,
+    "heroSkillPointsPerLevel": 1,
+    "dragonCrystalPerEvent": 12,
+    "siegeStrongholdsPerCity": 3
+  }
+}

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nore — Art of Conquest–style prototype (browser companion)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand">NORE <span>· MMORTS/RPG PROTOTYPE</span></div>
+      <div id="resources" class="chips"></div>
+      <div class="hint">Browser companion — same JSON + combat spec as the Unity 6 project</div>
+    </header>
+
+    <nav id="tabs">
+      <button data-tab="battle" class="active">Battle</button>
+      <button data-tab="stronghold">Stronghold</button>
+      <button data-tab="roster">Roster</button>
+      <button data-tab="world">World</button>
+      <button data-tab="tests">Tests</button>
+    </nav>
+
+    <main>
+      <section id="panel-battle" class="panel active">
+        <div class="battle-layout">
+          <div class="battle-left">
+            <div class="card">
+              <h2>Deployment</h2>
+              <label>Attacker race <select id="race-a"></select></label>
+              <label>Defender race <select id="race-d"></select></label>
+              <label><input type="checkbox" id="siege" /> City siege (defenders on ramparts)</label>
+              <label>Seed <input id="seed" type="number" value="4242" /></label>
+              <button id="deploy" class="primary">Deploy army &amp; start battle</button>
+              <button id="pause">Pause</button>
+              <label>Speed
+                <select id="speed"><option value="1">x1</option><option value="2">x2</option><option value="4">x4</option></select>
+              </label>
+              <p class="small">Select a unit, then click a blue cell to move its deployment slot. During battle, select a hero skill and click the grid to cast it in real time.</p>
+              <label>Place unit <select id="place-unit"></select></label>
+              <div id="placements" class="small"></div>
+            </div>
+            <div class="card">
+              <h2>Hero skills</h2>
+              <div id="skills"></div>
+              <p id="targeting" class="targeting"></p>
+            </div>
+            <div class="card">
+              <h2>Telemetry</h2>
+              <div id="telemetry"></div>
+            </div>
+          </div>
+          <div class="battle-right">
+            <div class="card">
+              <h2>Real-time tactical grid <span id="tick-label" class="small"></span></h2>
+              <canvas id="grid" width="840" height="480"></canvas>
+              <div class="legend"><span class="swatch blue"></span>attacker zone
+                <span class="swatch red"></span>defender zone <span class="swatch gold"></span>morale
+                <span class="swatch green"></span>HP pool</div>
+            </div>
+            <div class="card">
+              <h2>Battle log</h2>
+              <div id="log" class="log"></div>
+            </div>
+            <div class="card" id="result-card" hidden>
+              <h2>Result</h2>
+              <div id="result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-stronghold" class="panel">
+        <h2>Stronghold &amp; economy</h2>
+        <div id="offline" class="notice"></div>
+        <div class="card"><h3>Buildings (timers, Prosperity, Gold/Wood/Mana)</h3><div id="buildings"></div></div>
+        <div class="card"><h3>Caravans (transport / interception)</h3><div id="caravans"></div>
+          <button id="launch-caravan" class="primary">Launch caravan from Sunlit Mine</button></div>
+        <div class="card"><h3>Event log</h3><div id="economy-log" class="log"></div></div>
+      </section>
+
+      <section id="panel-roster" class="panel">
+        <h2>Five races · units · conversion · heroes · dragons</h2>
+        <div class="card"><h3>Race</h3><div id="race-switch"></div><p id="race-summary" class="small"></p></div>
+        <div class="card"><h3>Units (train with Gold/Wood/Mana)</h3><div id="units"></div></div>
+        <div class="card"><h3>Heroes (Might / Magic / Stamina / Command)</h3><div id="heroes"></div></div>
+        <div class="card"><h3>Dragons (talent trees &amp; awakening)</h3><div id="dragons"></div></div>
+      </section>
+
+      <section id="panel-world" class="panel">
+        <h2>World map · kingdoms · sieges · House · PvP</h2>
+        <div class="card"><h3>Map nodes</h3><div id="nodes"></div></div>
+        <div class="card"><h3>City stronghold sieges</h3><div id="cities"></div></div>
+        <div class="card"><h3>PvP modes &amp; events</h3><div id="pvp"></div></div>
+      </section>
+
+      <section id="panel-tests" class="panel">
+        <h2>Verification</h2>
+        <p class="small">Unity runs <code>Nore.Core.SelfTests</code> on Play. The browser runs the shared combat checks below;
+          <code>node tools/sim_harness.mjs</code> runs the full 9-check headless harness, and
+          <code>python3 tools/validate_data.py</code> validates every JSON reference.</p>
+        <button id="run-tests" class="primary">Run browser checks</button>
+        <div id="test-results"></div>
+        <div class="card"><h3>Architecture</h3>
+          <pre>Core (fixed-point, RNG) → Data (JSON registry) → Economy / Military / Combat / World → Runtime
+Unity: MonoBehaviour + IMGUI, 10 Hz fixed accumulator, save/load + offline catch-up
+Combat: aggregated squad stacks (struct-of-arrays) + spatial hash, integer-only, seeded RNG
+Browser: preview/sim.mjs mirrors docs/COMBAT_SPEC.md; C# remains authoritative</pre></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

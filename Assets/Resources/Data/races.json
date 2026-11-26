@@ -1,0 +1,152 @@
+{
+  "items": [
+    {
+      "id": "human", "name": "Human", "playstyle": "Balanced numbers, morale and healing",
+      "homeKingdom": "athaly", "primaryColor": "#6FA8DC",
+      "summary": "The starting race. Wins with superior numbers, physical damage and the only Clergy healers. Most troops are subject to morale swings.",
+      "modifiers": {
+        "damageDealtBp": 10000, "damageTakenBp": 10000, "magicResistBp": 0,
+        "moraleShockBp": 11500, "injuryLossBp": 5000, "ammoReserve": 0,
+        "ammoBurstBp": 10000, "ammoDryBp": 10000, "rampartBonusBp": 10000,
+        "activeBuffBp": 10000, "clergyHealBp": 900, "speedBp": 10000, "hasteBp": 10000,
+        "freeSummonCount": 0, "summonIntervalTicks": 0, "summonUnitId": "", "verdantHealBp": 0
+      },
+      "traits": [
+        { "id": "clergy", "label": "Clergy", "description": "Only race with dedicated healing units." },
+        { "id": "morale", "label": "Morale swings", "description": "Troops (except siege) take 15% more morale shock but rally well under high Command." },
+        { "id": "savage_thrusts", "label": "Savage Thrusts", "description": "Academy research: spearmen apply a +30% damage-taken debuff." }
+      ],
+      "unitIds": ["human_spearman", "human_archer", "human_light_infantry", "human_cavalry", "human_clergy", "human_catapult", "human_templar"]
+    },
+    {
+      "id": "dwarf", "name": "Dwarf", "playstyle": "Ammunition burst + mechanical line",
+      "homeKingdom": "skarn", "primaryColor": "#E69138",
+      "summary": "Devastating opening volleys from a unique ammunition system, then a slow grind once the magazines run dry. Mechs scale with Jacques buffs.",
+      "modifiers": {
+        "damageDealtBp": 10000, "damageTakenBp": 9500, "magicResistBp": 0,
+        "moraleShockBp": 9000, "injuryLossBp": 6000, "ammoReserve": 6,
+        "ammoBurstBp": 16500, "ammoDryBp": 6800, "rampartBonusBp": 10000,
+        "activeBuffBp": 10000, "clergyHealBp": 0, "speedBp": 8500, "hasteBp": 10000,
+        "freeSummonCount": 0, "summonIntervalTicks": 0, "summonUnitId": "", "verdantHealBp": 0
+      },
+      "traits": [
+        { "id": "ammo", "label": "Ammunition", "description": "First 6 volleys deal 65% more damage at double attack speed; afterwards 32% less damage at 0.62x speed." },
+        { "id": "mechanical", "label": "War Machines", "description": "Mechanical units gain HP from the Mech Workshop and from Jacques." },
+        { "id": "double_charge", "label": "Double Charge", "description": "Jacques' passive increases the magazine size of every allied unit." }
+      ],
+      "unitIds": ["dwarf_ironsmith", "dwarf_marksman", "dwarf_pyrotech", "dwarf_steam_engine", "dwarf_war_machine", "dwarf_cannon", "dwarf_mechsuit"]
+    },
+    {
+      "id": "lich", "name": "Lich", "playstyle": "Free summons and magic resistance",
+      "homeKingdom": "neferak", "primaryColor": "#8E7CC3",
+      "summary": "Frontline magical creatures take 50% less magic damage, Mummies summon free troops every cycle, and post-battle rebuild costs almost nothing.",
+      "modifiers": {
+        "damageDealtBp": 9500, "damageTakenBp": 10500, "magicResistBp": 5000,
+        "moraleShockBp": 7000, "injuryLossBp": 1000, "ammoReserve": 0,
+        "ammoBurstBp": 10000, "ammoDryBp": 10000, "rampartBonusBp": 10000,
+        "activeBuffBp": 10000, "clergyHealBp": 400, "speedBp": 9000, "hasteBp": 9500,
+        "freeSummonCount": 6, "summonIntervalTicks": 120, "summonUnitId": "lich_marauder", "verdantHealBp": 0
+      },
+      "traits": [
+        { "id": "magic_resist", "label": "50% magic resistance", "description": "Frontline creatures halve incoming magic damage." },
+        { "id": "free_summon", "label": "Free summons", "description": "Mummies raise 6 Marauders every 12 seconds, up to the supply cap." },
+        { "id": "low_rebuild", "label": "Low rebuild loop", "description": "Only 10% of routed troops become permanent losses." }
+      ],
+      "unitIds": ["lich_marauder", "lich_acolyte", "lich_stalker", "lich_bloodclaw", "lich_mummy", "lich_ballista", "lich_dunelord"]
+    },
+    {
+      "id": "rakan", "name": "Rakan", "playstyle": "Fast, active, buff-driven",
+      "homeKingdom": "hyral", "primaryColor": "#93C47D",
+      "summary": "Nimble aggressive play. Monks actively cast heal-over-time and poison immunity, and manual skill casts trigger a stacking army-wide Fury buff.",
+      "modifiers": {
+        "damageDealtBp": 10200, "damageTakenBp": 10500, "magicResistBp": 0,
+        "moraleShockBp": 10000, "injuryLossBp": 5500, "ammoReserve": 0,
+        "ammoBurstBp": 10000, "ammoDryBp": 10000, "rampartBonusBp": 10500,
+        "activeBuffBp": 11500, "clergyHealBp": 1100, "speedBp": 12500, "hasteBp": 11000,
+        "freeSummonCount": 0, "summonIntervalTicks": 0, "summonUnitId": "", "verdantHealBp": 0
+      },
+      "traits": [
+        { "id": "active", "label": "Active race", "description": "Every manual hero skill cast grants Rakan Fury: +15% attack speed for 6 seconds, up to 3 stacks." },
+        { "id": "monk_hot", "label": "Monk HoT", "description": "Chelonians/Monks heal over time and cleanse poison at Silver/Gold rank." },
+        { "id": "giant_slayer", "label": "Giant slayer", "description": "Light infantry deal bonus damage to large single-target units." }
+      ],
+      "unitIds": ["rakan_clansman", "rakan_crossbowman", "rakan_ascetic", "rakan_rakuza", "rakan_chelonian", "rakan_trebuchet", "rakan_samurai"]
+    },
+    {
+      "id": "sylvani", "name": "Sylvani", "playstyle": "Anti-rampart, low injury loss",
+      "homeKingdom": "icarum", "primaryColor": "#76A5AF",
+      "summary": "Manipulates terrain. +60% damage against ranged troops on ramparts, Serpents heal 7 troops every 5 seconds and defeats cost very few permanent losses.",
+      "modifiers": {
+        "damageDealtBp": 10000, "damageTakenBp": 10200, "magicResistBp": 1200,
+        "moraleShockBp": 9000, "injuryLossBp": 1500, "ammoReserve": 0,
+        "ammoBurstBp": 10000, "ammoDryBp": 10000, "rampartBonusBp": 16000,
+        "activeBuffBp": 10000, "clergyHealBp": 1300, "speedBp": 11000, "hasteBp": 10000,
+        "freeSummonCount": 0, "summonIntervalTicks": 0, "summonUnitId": "", "verdantHealBp": 700
+      },
+      "traits": [
+        { "id": "rampart", "label": "Rampart breaker", "description": "60% bonus damage against garrisoned ranged units on walls." },
+        { "id": "serpents", "label": "Serpent heal", "description": "Awakened Serpents heal up to 7 squads every 5 seconds and grant a large speed boost." },
+        { "id": "low_injury", "label": "Low injury loss", "description": "Only 15% of routed/wounded troops are lost after a defeat." }
+      ],
+      "unitIds": ["sylvani_outrider", "sylvani_watcher", "sylvani_tree_spirit", "sylvani_cannoneer", "sylvani_serpent", "sylvani_siege", "sylvani_warden"]
+    }
+  ],
+  "conversionChart": [
+    {
+      "id": "heavy", "label": "Heavy Infantry", "cost": { "gold": 400, "wood": 200, "mana": 0 },
+      "entries": [
+        { "race": "human", "unitId": "human_spearman" }, { "race": "dwarf", "unitId": "dwarf_ironsmith" },
+        { "race": "lich", "unitId": "lich_marauder" }, { "race": "rakan", "unitId": "rakan_clansman" },
+        { "race": "sylvani", "unitId": "sylvani_outrider" }
+      ]
+    },
+    {
+      "id": "line", "label": "Line / Ranged Infantry", "cost": { "gold": 450, "wood": 250, "mana": 0 },
+      "entries": [
+        { "race": "human", "unitId": "human_archer" }, { "race": "dwarf", "unitId": "dwarf_marksman" },
+        { "race": "lich", "unitId": "lich_acolyte" }, { "race": "rakan", "unitId": "rakan_crossbowman" },
+        { "race": "sylvani", "unitId": "sylvani_watcher" }
+      ]
+    },
+    {
+      "id": "light", "label": "Light Infantry", "cost": { "gold": 350, "wood": 180, "mana": 0 },
+      "entries": [
+        { "race": "human", "unitId": "human_light_infantry" }, { "race": "dwarf", "unitId": "dwarf_pyrotech" },
+        { "race": "lich", "unitId": "lich_stalker" }, { "race": "rakan", "unitId": "rakan_ascetic" },
+        { "race": "sylvani", "unitId": "sylvani_tree_spirit" }
+      ]
+    },
+    {
+      "id": "cavalry", "label": "Cavalry", "cost": { "gold": 700, "wood": 350, "mana": 0 },
+      "entries": [
+        { "race": "human", "unitId": "human_cavalry" }, { "race": "dwarf", "unitId": "dwarf_steam_engine" },
+        { "race": "lich", "unitId": "lich_bloodclaw" }, { "race": "rakan", "unitId": "rakan_rakuza" },
+        { "race": "sylvani", "unitId": "sylvani_cannoneer" }
+      ]
+    },
+    {
+      "id": "clergy", "label": "Clergy / Support", "cost": { "gold": 550, "wood": 200, "mana": 150 },
+      "entries": [
+        { "race": "human", "unitId": "human_clergy" }, { "race": "dwarf", "unitId": "dwarf_war_machine" },
+        { "race": "lich", "unitId": "lich_mummy" }, { "race": "rakan", "unitId": "rakan_chelonian" },
+        { "race": "sylvani", "unitId": "sylvani_serpent" }
+      ]
+    },
+    {
+      "id": "siege", "label": "Siege", "cost": { "gold": 900, "wood": 700, "mana": 100 },
+      "entries": [
+        { "race": "human", "unitId": "human_catapult" }, { "race": "dwarf", "unitId": "dwarf_cannon" },
+        { "race": "lich", "unitId": "lich_ballista" }, { "race": "rakan", "unitId": "rakan_trebuchet" },
+        { "race": "sylvani", "unitId": "sylvani_siege" }
+      ]
+    },
+    {
+      "id": "elite", "label": "Elite (Silver+)", "cost": { "gold": 1400, "wood": 800, "mana": 350 },
+      "entries": [
+        { "race": "human", "unitId": "human_templar" }, { "race": "dwarf", "unitId": "dwarf_mechsuit" },
+        { "race": "lich", "unitId": "lich_dunelord" }, { "race": "rakan", "unitId": "rakan_samurai" },
+        { "race": "sylvani", "unitId": "sylvani_warden" }
+      ]
+    }
+  ]
+}

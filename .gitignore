@@ -1,16 +1,43 @@
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-crash.*.log
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+Assets/AssetStoreTools*
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.unitypackage
+sysinfo.txt
+crashlytics-build.properties
 
-# Local variable files may contain environment-specific values; keep them out of VCS.
-# Example files (*.tfvars.example) ARE tracked.
-*.tfvars
-
-# Provider lock file is intentionally TRACKED for reproducible builds.
-# (do not ignore .terraform.lock.hcl)
-
-# OS cruft
+# OS
 .DS_Store
+Thumbs.db
+
+# Local tooling / scratch
+tools/.syntax/
+tools/.dom/
+tools/out/
+preview/_smoke.mjs
+preview/node_modules/
+__pycache__/
+.venv/
+
+# Keep the shipped JSON data and ProjectSettings tracked.
+!Assets/Resources/Data/*.json
+!ProjectSettings/*.asset

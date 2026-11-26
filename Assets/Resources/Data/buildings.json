@@ -1,0 +1,116 @@
+{
+  "items": [
+    {
+      "id": "stronghold", "name": "Stronghold", "category": "Core", "maxLevel": 18, "unlockStrongholdLevel": 1,
+      "cost": { "gold": 0, "wood": 0, "mana": 0 }, "costGrowthBp": 15500,
+      "buildSeconds": 60, "buildGrowthBp": 16200, "prosperityPerLevel": 25,
+      "effects": [
+        { "stat": "troopCapacity", "baseValue": 40, "perLevel": 20 },
+        { "stat": "heroLevelCap", "baseValue": 5, "perLevel": 5 },
+        { "stat": "caravanBonusBp", "baseValue": 0, "perLevel": 250 },
+        { "stat": "wallHp", "baseValue": 500, "perLevel": 400 },
+        { "stat": "buildingSlots", "baseValue": 4, "perLevel": 1 }
+      ]
+    },
+    {
+      "id": "miner_hut", "name": "Miner Hut", "category": "Economy", "maxLevel": 18, "unlockStrongholdLevel": 1,
+      "cost": { "gold": 400, "wood": 300, "mana": 0 }, "costGrowthBp": 15000,
+      "buildSeconds": 30, "buildGrowthBp": 15500, "prosperityPerLevel": 8,
+      "effects": [ { "stat": "goldPerMinute", "baseValue": 0, "perLevel": 120 } ]
+    },
+    {
+      "id": "sawmill", "name": "Sawmill", "category": "Economy", "maxLevel": 18, "unlockStrongholdLevel": 1,
+      "cost": { "gold": 350, "wood": 250, "mana": 0 }, "costGrowthBp": 15000,
+      "buildSeconds": 30, "buildGrowthBp": 15500, "prosperityPerLevel": 8,
+      "effects": [ { "stat": "woodPerMinute", "baseValue": 0, "perLevel": 100 } ]
+    },
+    {
+      "id": "mana_stream", "name": "Mana Stream", "category": "Economy", "maxLevel": 18, "unlockStrongholdLevel": 2,
+      "cost": { "gold": 600, "wood": 500, "mana": 0 }, "costGrowthBp": 15200,
+      "buildSeconds": 45, "buildGrowthBp": 15600, "prosperityPerLevel": 10,
+      "effects": [ { "stat": "manaPerMinute", "baseValue": 0, "perLevel": 60 } ]
+    },
+    {
+      "id": "warehouse", "name": "Warehouse", "category": "Economy", "maxLevel": 18, "unlockStrongholdLevel": 3,
+      "cost": { "gold": 700, "wood": 800, "mana": 0 }, "costGrowthBp": 15000,
+      "buildSeconds": 50, "buildGrowthBp": 15500, "prosperityPerLevel": 9,
+      "effects": [ { "stat": "storageCap", "baseValue": 20000, "perLevel": 24000 } ]
+    },
+    {
+      "id": "barracks", "name": "Barracks", "category": "Military", "maxLevel": 18, "unlockStrongholdLevel": 1,
+      "cost": { "gold": 500, "wood": 450, "mana": 0 }, "costGrowthBp": 15200,
+      "buildSeconds": 40, "buildGrowthBp": 15500, "prosperityPerLevel": 10,
+      "effects": [
+        { "stat": "trainSpeedBp", "baseValue": 0, "perLevel": 400 },
+        { "stat": "heavyCap", "baseValue": 0, "perLevel": 12 }
+      ]
+    },
+    {
+      "id": "archery_range", "name": "Archery Range", "category": "Military", "maxLevel": 18, "unlockStrongholdLevel": 2,
+      "cost": { "gold": 650, "wood": 600, "mana": 0 }, "costGrowthBp": 15200,
+      "buildSeconds": 50, "buildGrowthBp": 15500, "prosperityPerLevel": 10,
+      "effects": [ { "stat": "lineCap", "baseValue": 0, "perLevel": 12 } ]
+    },
+    {
+      "id": "stables", "name": "Stables", "category": "Military", "maxLevel": 18, "unlockStrongholdLevel": 3,
+      "cost": { "gold": 900, "wood": 950, "mana": 0 }, "costGrowthBp": 15300,
+      "buildSeconds": 70, "buildGrowthBp": 15600, "prosperityPerLevel": 12,
+      "effects": [ { "stat": "cavalryCap", "baseValue": 0, "perLevel": 8 } ]
+    },
+    {
+      "id": "academy", "name": "Academy", "category": "Research", "maxLevel": 18, "unlockStrongholdLevel": 4,
+      "cost": { "gold": 1200, "wood": 900, "mana": 200 }, "costGrowthBp": 15400,
+      "buildSeconds": 90, "buildGrowthBp": 15700, "prosperityPerLevel": 15,
+      "effects": [
+        { "stat": "researchSlots", "baseValue": 0, "perLevel": 1 },
+        { "stat": "researchSpeedBp", "baseValue": 0, "perLevel": 300 }
+      ]
+    },
+    {
+      "id": "mech_workshop", "name": "Mech Workshop", "category": "Military", "maxLevel": 18, "unlockStrongholdLevel": 5,
+      "cost": { "gold": 1600, "wood": 1400, "mana": 300 }, "costGrowthBp": 15400,
+      "buildSeconds": 120, "buildGrowthBp": 15700, "prosperityPerLevel": 16,
+      "effects": [
+        { "stat": "mechanicalHpBp", "baseValue": 0, "perLevel": 250 },
+        { "stat": "ammoReserve", "baseValue": 0, "perLevel": 1 }
+      ]
+    },
+    {
+      "id": "hospital", "name": "Hospital", "category": "Military", "maxLevel": 18, "unlockStrongholdLevel": 4,
+      "cost": { "gold": 1100, "wood": 800, "mana": 150 }, "costGrowthBp": 15200,
+      "buildSeconds": 80, "buildGrowthBp": 15600, "prosperityPerLevel": 12,
+      "effects": [
+        { "stat": "hospitalCap", "baseValue": 0, "perLevel": 40 },
+        { "stat": "healRateBp", "baseValue": 0, "perLevel": 250 }
+      ]
+    },
+    {
+      "id": "gates", "name": "Gates", "category": "Defense", "maxLevel": 18, "unlockStrongholdLevel": 2,
+      "cost": { "gold": 800, "wood": 1200, "mana": 0 }, "costGrowthBp": 15100,
+      "buildSeconds": 60, "buildGrowthBp": 15500, "prosperityPerLevel": 11,
+      "effects": [
+        { "stat": "wallHp", "baseValue": 0, "perLevel": 900 },
+        { "stat": "garrisonSlots", "baseValue": 0, "perLevel": 1 }
+      ]
+    },
+    {
+      "id": "fort", "name": "Fort", "category": "Defense", "maxLevel": 18, "unlockStrongholdLevel": 6,
+      "cost": { "gold": 1800, "wood": 2200, "mana": 200 }, "costGrowthBp": 15400,
+      "buildSeconds": 180, "buildGrowthBp": 15800, "prosperityPerLevel": 18,
+      "effects": [
+        { "stat": "defenseBp", "baseValue": 0, "perLevel": 350 },
+        { "stat": "rampartHp", "baseValue": 0, "perLevel": 1200 }
+      ]
+    },
+    {
+      "id": "cathedral", "name": "Cathedral", "category": "Core", "maxLevel": 10, "unlockStrongholdLevel": 9,
+      "cost": { "gold": 5000, "wood": 4200, "mana": 1500 }, "costGrowthBp": 16000,
+      "buildSeconds": 600, "buildGrowthBp": 16500, "prosperityPerLevel": 30,
+      "effects": [
+        { "stat": "heroLevelCap", "baseValue": 0, "perLevel": 3 },
+        { "stat": "manaPerMinute", "baseValue": 0, "perLevel": 90 },
+        { "stat": "moraleBonus", "baseValue": 0, "perLevel": 12 }
+      ]
+    }
+  ]
+}
