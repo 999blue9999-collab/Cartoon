@@ -1,0 +1,18 @@
+{
+  "items": [
+    { "id": "claymore",          "name": "Barbarian Claymore",   "slot": "weapon",   "stat": "might",    "value": 12, "rarity": "rare",      "description": "Rufio's signature greatsword." },
+    { "id": "ancient_crystal",   "name": "Ancient Crystal",      "slot": "weapon",   "stat": "magic",    "value": 14, "rarity": "epic",      "description": "Amplifies ice and necromantic spells." },
+    { "id": "conjurers_cap",     "name": "Conjurer's Cap",       "slot": "head",     "stat": "magic",    "value": 8,  "rarity": "rare",      "description": "Standard issue from the Ice Temple." },
+    { "id": "iron_visor",        "name": "Iron Visor",           "slot": "head",     "stat": "stamina",  "value": 9,  "rarity": "rare",      "description": "Simple, thick, reliable." },
+    { "id": "commander_helm",    "name": "Commander's Helm",     "slot": "head",     "stat": "command",  "value": 10, "rarity": "epic",      "description": "Keeps wavering troops in line." },
+    { "id": "plate_of_nore",     "name": "Plate of Nore",        "slot": "armor",    "stat": "stamina",  "value": 14, "rarity": "epic",      "description": "Forged for the six kingdoms' champions." },
+    { "id": "frost_weave",       "name": "Frost Weave Robes",    "slot": "armor",    "stat": "magic",    "value": 10, "rarity": "rare",      "description": "Light armor for casters." },
+    { "id": "war_banner",        "name": "War Banner",           "slot": "artifact", "stat": "command",  "value": 12, "rarity": "legendary", "description": "Troops fight faithfully beneath it." },
+    { "id": "mech_core",         "name": "Mech Core",            "slot": "artifact", "stat": "might",    "value": 11, "rarity": "epic",      "description": "Powers Dwarven war machines." },
+    { "id": "frost_trinket",     "name": "Frost Ability Trinket","slot": "trinket", "stat": "magic",    "value": 7,  "rarity": "rare",      "description": "Adds frost ability power." },
+    { "id": "captains_ring",     "name": "Captain's Ring",       "slot": "trinket",  "stat": "command",  "value": 7,  "rarity": "rare",      "description": "Small but decisive morale boost." },
+    { "id": "prism_of_valor",    "name": "Prism of Valor",       "slot": "prism",    "stat": "stamina",  "value": 16, "rarity": "divine",    "description": "Resonates with dragon awakening." },
+    { "id": "prism_of_command",  "name": "Prism of Command",     "slot": "prism",    "stat": "command",  "value": 16, "rarity": "divine",    "description": "The rarest support prism." },
+    { "id": "swamp_talisman",    "name": "Balmford Talisman",    "slot": "trinket",  "stat": "stamina",  "value": 6,  "rarity": "rare",      "description": "Event reward from Balmford Swamp." }
+  ]
+}
