@@ -59,11 +59,17 @@ Unity -batchmode -quit -executeMethod Nore.EditorTools.CloudBuildSetup.Build
 
 ### Browser companion (no Unity install needed)
 ```bash
-python3 -m http.server 8000 --bind 0.0.0.0
-# open http://localhost:8000/preview/
+cd game
+node server.js            # → http://localhost:3000   (PORT=8080 node server.js to change)
 ```
-It loads the **same JSON files** and a JS reference implementation of the same combat spec
-(`preview/sim.mjs`), so you can play the loop and inspect morale/ammo/counters immediately.
+`game/server.js` is a dependency-free static server that serves the repository root (so the
+companion can `fetch` the shared JSON in `Assets/Resources/Data`) and redirects `/` to
+`/preview/`. It binds `0.0.0.0`, honours `PORT`/`HOST`, refuses dotfiles (`.git`, saves) and
+path traversal, and adds `GET /healthz`. Any static file server works just as well, e.g.
+`python3 -m http.server 8000 --bind 0.0.0.0` → `http://localhost:8000/preview/`.
+
+The companion loads the **same JSON files** and a JS reference implementation of the same combat
+spec (`preview/sim.mjs`), so you can play the loop and inspect morale/ammo/counters immediately.
 Unity's C# `BattleSimulation` is authoritative; the JS mirror exists for headless verification.
 
 ---
@@ -126,6 +132,7 @@ See `docs/ARCHITECTURE.md`, `docs/DATA_SCHEMA.md` and `docs/COMBAT_SPEC.md` for 
 | `node tools/syntax_check.mjs` | ✅ 20/20 C# files parse cleanly (tree-sitter C# grammar) |
 | `node tools/sim_harness.mjs` | ✅ 9/9 combat checks (determinism, ammo, Lich resist, Command morale, Sylvani ramparts, Rakan Fury, 200k troops, offline math, conversion) |
 | `node tools/dom_smoke.mjs` | ✅ 12/12 browser UI smoke checks (boot, deploy, cast, upgrade, race switch, explore, tests) |
+| `node tools/server_smoke.mjs` | ✅ 12/12 `game/server.js` checks (redirect, preview assets, 9/9 data files, 404/403/405, traversal) |
 | Unity Play | `Nore.Core.SelfTests` runs 15 checks automatically; results in the **System** tab / console |
 
 `tools/syntax_check.mjs` needs a one-time `cd tools/.syntax && npm install --build-from-source tree-sitter@0.25.1 tree-sitter-c-sharp@0.24.0`;
@@ -156,7 +163,9 @@ Assets/
 ProjectSettings/     ProjectVersion.txt, EditorBuildSettings.asset
 Packages/manifest.json
 preview/             index.html, style.css, app.js, sim.mjs   (browser companion)
-tools/               validate_data.py, validate_unity_project.py, syntax_check.mjs, sim_harness.mjs, dom_smoke.mjs
+game/                server.js            (zero-dependency static host for the browser companion)
+tools/               validate_data.py, validate_unity_project.py, syntax_check.mjs, sim_harness.mjs,
+                     dom_smoke.mjs, server_smoke.mjs
 docs/                ARCHITECTURE.md, DATA_SCHEMA.md, COMBAT_SPEC.md, UNITY_CLOUD.md
 ```
 
